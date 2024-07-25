@@ -6,14 +6,13 @@ import Popup from 'devextreme-react/popup';
 import Form, { Item } from 'devextreme-react/form';
 
 const data = [
-  { id: 1, combinedValue: { value: 'Options1/OptionsA', text: 'Options1/OptionsA', empty: false } },
-  { id: 2, combinedValue: { value: 'Options2/OptionsB', text: 'Options2/OptionsB', empty: false } },
-  { id: 3, combinedValue: { value: '*', text: '*', empty: true } },
+  { id: 1, combinedValue: 'Value1/Value2', newCombinedValue: '<1.000.000' },
   // Diğer veriler
 ];
 
 const options1 = ['Option1', 'Option2', 'Option3'];
 const options2 = ['OptionA', 'OptionB', 'OptionC'];
+const comparisonOptions = ['<', '=', '>'];
 
 class Tasks extends Component {
   constructor(props) {
@@ -22,9 +21,12 @@ class Tasks extends Component {
       gridData: data,
       selectedValue1: '',
       selectedValue2: '',
+      selectedComparison: '',
+      amount: '',
       editingRowKey: null,
       isPopupVisible: false,
-      popupPosition: { my: 'left top', at: 'left bottom', of: null }
+      isNewPopupVisible: false,
+      popupPosition: { my: 'center', at: 'center', of: window }
     };
   }
 
@@ -32,19 +34,40 @@ class Tasks extends Component {
     const { selectedValue1, selectedValue2, gridData, editingRowKey } = this.state;
     const newValue = `${selectedValue1}/${selectedValue2}`;
     const updatedData = gridData.map(item => 
-      item.id === editingRowKey ? { ...item, combinedValue: { value: newValue, text: newValue, empty: false } } : item
+      item.id === editingRowKey ? { ...item, combinedValue: newValue } : item
     );
     this.setState({ gridData: updatedData, isPopupVisible: false });
   };
 
+  handleNewSave = () => {
+    const { selectedComparison, amount, gridData, editingRowKey } = this.state;
+    const newCombinedValue = `${selectedComparison}${amount}`;
+    const updatedData = gridData.map(item => 
+      item.id === editingRowKey ? { ...item, newCombinedValue: newCombinedValue } : item
+    );
+    this.setState({ gridData: updatedData, isNewPopupVisible: false });
+  };
+
   handleCellClick = (e) => {
     if (e.column.dataField === 'combinedValue' && e.row && e.row.data) {
+      const cellElement = e.cellElement;
+      const rect = cellElement.getBoundingClientRect();
       this.setState({ 
         editingRowKey: e.row.data.id, 
-        selectedValue1: e.row.data.combinedValue.value.split('/')[0],
-        selectedValue2: e.row.data.combinedValue.value.split('/')[1],
+        selectedValue1: e.row.data.combinedValue.split('/')[0],
+        selectedValue2: e.row.data.combinedValue.split('/')[1],
         isPopupVisible: true,
-        popupPosition: { my: 'left top', at: 'left bottom', of: e.cellElement }
+        popupPosition: { my: 'top', at: 'bottom', of: cellElement }
+      });
+    } else if (e.column.dataField === 'newCombinedValue' && e.row && e.row.data) {
+      const cellElement = e.cellElement;
+      const rect = cellElement.getBoundingClientRect();
+      this.setState({ 
+        editingRowKey: e.row.data.id, 
+        selectedComparison: e.row.data.newCombinedValue[0],
+        amount: e.row.data.newCombinedValue.slice(1),
+        isNewPopupVisible: true,
+        popupPosition: { my: 'top', at: 'bottom', of: cellElement }
       });
     }
   };
@@ -54,11 +77,11 @@ class Tasks extends Component {
   };
 
   handleCancel = () => {
-    this.setState({ isPopupVisible: false });
+    this.setState({ isPopupVisible: false, isNewPopupVisible: false });
   };
 
   render() {
-    const { gridData, selectedValue1, selectedValue2, isPopupVisible, popupPosition } = this.state;
+    const { gridData, selectedValue1, selectedValue2, selectedComparison, amount, isPopupVisible, isNewPopupVisible, popupPosition } = this.state;
 
     return (
       <div>
@@ -75,18 +98,20 @@ class Tasks extends Component {
             allowAdding={true}
             allowDeleting={true}
           />
-          <Column dataField="combinedValue.text" caption="Combined Value" />
+          <Column dataField="combinedValue" caption="Combined Value" />
+          <Column dataField="newCombinedValue" caption="New Combined Value" />
         </DataGrid>
 
         {isPopupVisible && (
           <Popup 
-            title="Edit Popup" 
+            title="Edit Popup"
             showTitle={true} 
             visible={isPopupVisible} 
             onHiding={() => this.setState({ isPopupVisible: false })} 
             width={400} 
             height={200}
             position={popupPosition}
+            showCloseButton={true}
             contentRender={() => (
               <div style={{ backgroundColor: '#2c2c2c', color: '#fff', padding: '20px', borderRadius: '10px', fontFamily: 'Roboto', position: 'relative' }}>
                 <Form>
@@ -123,11 +148,57 @@ class Tasks extends Component {
                     </div>
                   </Item>
                 </Form>
-                <Button 
-                  icon="close" 
-                  onClick={this.handleCancel} 
-                  style={{ position: 'absolute', top: '10px', right: '-50px', backgroundColor: 'transparent', color: '#fff' }}
-                />
+              </div>
+            )}
+          />
+        )}
+
+        {isNewPopupVisible && (
+          <Popup 
+            title="Edit New Popup"
+            showTitle={true} 
+            visible={isNewPopupVisible} 
+            onHiding={() => this.setState({ isNewPopupVisible: false })} 
+            width={400} 
+            height={200}
+            position={popupPosition}
+            showCloseButton={true}
+            contentRender={() => (
+              <div style={{ backgroundColor: '#2c2c2c', color: '#fff', padding: '20px', borderRadius: '10px', fontFamily: 'Roboto', position: 'relative' }}>
+                <Form>
+                  <Item itemType="group" colCount={2} colSpan={2}>
+                    <Item>
+                      <SelectBox
+                        dataSource={comparisonOptions}
+                        value={selectedComparison}
+                        onValueChanged={(e) => this.setState({ selectedComparison: e.value })}
+                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px' }}
+                      />
+                    </Item>
+                    <Item>
+                      <input
+                        type="text"
+                        value={amount}
+                        onChange={(e) => this.setState({ amount: e.target.value })}
+                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px', width: '100%' }}
+                      />
+                    </Item>
+                  </Item>
+                  <Item>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button 
+                        text="Save" 
+                        onClick={this.handleNewSave} 
+                        style={{ backgroundColor: '#4CAF50', color: '#fff', marginRight: '10px', borderRadius: '5px' }}
+                      />
+                      <Button 
+                        text="Cancel" 
+                        onClick={this.handleCancel} 
+                        style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px' }}
+                      />
+                    </div>
+                  </Item>
+                </Form>
               </div>
             )}
           />

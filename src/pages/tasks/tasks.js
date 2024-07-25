@@ -1,110 +1,63 @@
-import React from 'react';
-import 'devextreme/data/odata/store';
-import DataGrid, {
-  Column,
-  Pager,
-  Paging,
-  FilterRow,
-  Lookup
-} from 'devextreme-react/data-grid';
+import React, { useState } from 'react';
+import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
+import Button from 'devextreme-react/button';
+import Popup from './PopupComponent'; // Ayrı bir popup bileşeni
 
-export default function Task() {
+const data = [
+  { id: 1, combinedValue: 'Value1/Value2', newCombinedValue: '<1.000.000' },
+  // Diğer veriler
+];
+
+const Tasks = () => {
+  const [gridData, setGridData] = useState(data);
+  const [popupData, setPopupData] = useState(null);
+
+  const handleCellClick = (e) => {
+    if (e.column.dataField === 'combinedValue' || e.column.dataField === 'newCombinedValue') {
+      setPopupData({
+        id: e.row.data.id,
+        field: e.column.dataField,
+        value: e.row.data[e.column.dataField]
+      });
+    }
+  };
+
+  const handleSave = (id, field, newValue) => {
+    const updatedData = gridData.map(item => 
+      item.id === id ? { ...item, [field]: newValue } : item
+    );
+    setGridData(updatedData);
+    setPopupData(null);
+  };
+
   return (
-    <React.Fragment>
-      <h2 className={'content-block'}>Tasks</h2>
-
+    <div>
+      <Button text="Refresh" onClick={() => setGridData(data)} />
       <DataGrid
-        className={'dx-card wide-card'}
-        dataSource={dataSource}
-        showBorders={false}
-        focusedRowEnabled={true}
-        defaultFocusedRowIndex={0}
-        columnAutoWidth={true}
-        columnHidingEnabled={true}
+        dataSource={gridData}
+        keyExpr="id"
+        showBorders={true}
+        onCellClick={handleCellClick}
       >
-        <Paging defaultPageSize={10} />
-        <Pager showPageSizeSelector={true} showInfo={true} />
-        <FilterRow visible={true} />
-
-        <Column dataField={'Task_ID'} width={90} hidingPriority={2} />
-        <Column
-          dataField={'Task_Subject'}
-          width={190}
-          caption={'Subject'}
-          hidingPriority={8}
+        <Editing
+          mode="cell"
+          allowUpdating={true}
+          allowAdding={true}
+          allowDeleting={true}
         />
-        <Column
-          dataField={'Task_Status'}
-          caption={'Status'}
-          hidingPriority={6}
-        />
-        <Column
-          dataField={'Task_Priority'}
-          caption={'Priority'}
-          hidingPriority={5}
-        >
-          <Lookup
-            dataSource={priorities}
-            valueExpr={'value'}
-            displayExpr={'name'}
-          />
-        </Column>
-        <Column
-          dataField={'ResponsibleEmployee.Employee_Full_Name'}
-          caption={'Assigned To'}
-          allowSorting={false}
-          hidingPriority={7}
-        />
-        <Column
-          dataField={'Task_Start_Date'}
-          caption={'Start Date'}
-          dataType={'date'}
-          hidingPriority={3}
-        />
-        <Column
-          dataField={'Task_Due_Date'}
-          caption={'Due Date'}
-          dataType={'date'}
-          hidingPriority={4}
-        />
-        <Column
-          dataField={'Task_Priority'}
-          caption={'Priority'}
-          name={'Priority'}
-          hidingPriority={1}
-        />
-        <Column
-          dataField={'Task_Completion'}
-          caption={'Completion'}
-          hidingPriority={0}
-        />
+        <Column dataField="combinedValue" caption="Combined Value" />
+        <Column dataField="newCombinedValue" caption="New Combined Value" />
       </DataGrid>
-    </React.Fragment>
-)}
 
-const dataSource = {
-  store: {
-    version: 2,
-    type: 'odata',
-    key: 'Task_ID',
-    url: 'https://js.devexpress.com/Demos/DevAV/odata/Tasks'
-  },
-  expand: 'ResponsibleEmployee',
-  select: [
-    'Task_ID',
-    'Task_Subject',
-    'Task_Start_Date',
-    'Task_Due_Date',
-    'Task_Status',
-    'Task_Priority',
-    'Task_Completion',
-    'ResponsibleEmployee/Employee_Full_Name'
-  ]
+      {popupData && (
+        <Popup 
+          data={popupData}
+          onSave={handleSave}
+          onCancel={() => setPopupData(null)}
+        />
+      )}
+    </div>
+  );
 };
 
-const priorities = [
-  { name: 'High', value: 4 },
-  { name: 'Urgent', value: 3 },
-  { name: 'Normal', value: 2 },
-  { name: 'Low', value: 1 }
-];
+export default Tasks;
