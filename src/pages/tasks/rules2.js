@@ -6,7 +6,9 @@ import Popup from 'devextreme-react/popup';
 import Form, { Item } from 'devextreme-react/form';
 
 const data = [
-  { id: 1, combinedValue: 'Value1/Value2' },
+  { id: 1, combinedValue: { value: 'Options1/OptionsA', text: 'Options1/OptionsA', empty: false } },
+  { id: 2, combinedValue: { value: 'Options2/OptionsB', text: 'Options2/OptionsB', empty: false } },
+  { id: 3, combinedValue: { value: '*', text: '*', empty: true } },
   // Diğer veriler
 ];
 
@@ -30,7 +32,7 @@ class Tasks extends Component {
     const { selectedValue1, selectedValue2, gridData, editingRowKey } = this.state;
     const newValue = `${selectedValue1}/${selectedValue2}`;
     const updatedData = gridData.map(item => 
-      item.id === editingRowKey ? { ...item, combinedValue: newValue } : item
+      item.id === editingRowKey ? { ...item, combinedValue: { value: newValue, text: newValue, empty: false } } : item
     );
     this.setState({ gridData: updatedData, isPopupVisible: false });
   };
@@ -39,8 +41,8 @@ class Tasks extends Component {
     if (e.column.dataField === 'combinedValue' && e.row && e.row.data) {
       this.setState({ 
         editingRowKey: e.row.data.id, 
-        selectedValue1: e.row.data.combinedValue.split('/')[0],
-        selectedValue2: e.row.data.combinedValue.split('/')[1],
+        selectedValue1: e.row.data.combinedValue.value.split('/')[0],
+        selectedValue2: e.row.data.combinedValue.value.split('/')[1],
         isPopupVisible: true,
         popupPosition: { my: 'left top', at: 'left bottom', of: e.cellElement }
       });
@@ -73,7 +75,7 @@ class Tasks extends Component {
             allowAdding={true}
             allowDeleting={true}
           />
-          <Column dataField="combinedValue" caption="Combined Value" />
+          <Column dataField="combinedValue.text" caption="Combined Value" />
         </DataGrid>
 
         {isPopupVisible && (
