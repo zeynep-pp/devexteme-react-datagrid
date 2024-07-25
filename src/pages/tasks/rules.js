@@ -4,11 +4,10 @@ import Button from 'devextreme-react/button';
 import Form, { Item } from 'devextreme-react/form';
 import Popup from 'devextreme-react/popup';
 
-const options1 = ['Option1', 'Option2', 'Option3'];
 const options2 = ['OptionA', 'OptionB', 'OptionC'];
 const comparisonOptions = ['<', '=', '>'];
 
-const PopupComponent = ({ data, onSave, onCancel }) => {
+const PopupComponent = ({ data, options1, visible, onSave, onCancel }) => {
   const [selectedValue1, setSelectedValue1] = useState(data.value.split('/')[0]);
   const [selectedValue2, setSelectedValue2] = useState(data.value.split('/')[1]);
   const [selectedComparison, setSelectedComparison] = useState(data.value[0]);
@@ -25,7 +24,7 @@ const PopupComponent = ({ data, onSave, onCancel }) => {
     <Popup 
       title="Edit Popup"
       showTitle={true} 
-      visible={true} 
+      visible={visible} 
       onHiding={onCancel} 
       width={400} 
       height={200}

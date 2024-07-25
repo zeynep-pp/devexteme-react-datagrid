@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import Button from 'devextreme-react/button';
-import Popup from './PopupComponent'; // Ayrı bir popup bileşeni
+import PopupComponent from './PopupComponent'; // Ayrı bir popup bileşeni
 
 const data = [
   { id: 1, combinedValue: 'Value1/Value2', newCombinedValue: '<1.000.000' },
@@ -11,6 +11,8 @@ const data = [
 const Tasks = () => {
   const [gridData, setGridData] = useState(data);
   const [popupData, setPopupData] = useState(null);
+  const [options1, setOptions1] = useState(['Option1', 'Option2', 'Option3']);
+  const [popupVisible, setPopupVisible] = useState(false);
 
   const handleCellClick = (e) => {
     if (e.column.dataField === 'combinedValue' || e.column.dataField === 'newCombinedValue') {
@@ -19,6 +21,7 @@ const Tasks = () => {
         field: e.column.dataField,
         value: e.row.data[e.column.dataField]
       });
+      setPopupVisible(true);
     }
   };
 
@@ -28,6 +31,7 @@ const Tasks = () => {
     );
     setGridData(updatedData);
     setPopupData(null);
+    setPopupVisible(false);
   };
 
   return (
@@ -49,11 +53,13 @@ const Tasks = () => {
         <Column dataField="newCombinedValue" caption="New Combined Value" />
       </DataGrid>
 
-      {popupData && (
-        <Popup 
+      {popupVisible && (
+        <PopupComponent 
           data={popupData}
+          options1={options1}
+          visible={popupVisible}
           onSave={handleSave}
-          onCancel={() => setPopupData(null)}
+          onCancel={() => setPopupVisible(false)}
         />
       )}
     </div>
