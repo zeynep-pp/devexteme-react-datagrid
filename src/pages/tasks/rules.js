@@ -105,3 +105,138 @@ class PopupComponent extends Component {
 }
 
 export default PopupComponent;
+
+
+
+// FilterByAmount.js (React class bileşeni)
+import React, { Component } from 'react';
+
+class FilterByAmount extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    valueTextPairDTO: {
+      value: '', // Gerçek değerle başlatın
+      text: '', // Gerçek metinle başlatın
+    },
+    dvMathOperator: {
+      Value: '', // Gerçek değerle başlatın
+    },
+    speMinAmount: {
+      Value: '', // Gerçek değerle başlatın
+    },
+    speMaxAmount: {
+      Value: '', // Gerçek değerle başlatın
+    },
+  };
+}
+
+handleMathOperatorChange = (event) => {
+  const { value } = event.target;
+  this.setState({
+    dvMathOperator: {
+      Value: value,
+    },
+  });
+};
+
+handleSaveFilterClick = () => {
+  try {
+    const { dvMathOperator, speMinAmount, speMaxAmount } = this.state;
+    const { value } = this.state.valueTextPairDTO;
+
+    if (dvMathOperator.Value === 'BETWEEN') {
+      const newValue = `${dvMathOperator.Value}-${speMinAmount.Value}-${speMaxAmount.Value}`;
+      const newText = `${speMinAmount.Value}-${speMaxAmount.Value}`;
+      this.setState({
+        valueTextPairDTO: {
+          value: newValue,
+          text: newText,
+        },
+      });
+    } else if (dvMathOperator.Value === 'GREATER_THAN') {
+      const newValue = `${dvMathOperator.Value}-${speMinAmount.Value}`;
+      const newText = `>${speMinAmount.Value}`;
+      this.setState({
+        valueTextPairDTO: {
+          value: newValue,
+          text: newText,
+        },
+      });
+    } else if (dvMathOperator.Value === 'SMALLER_THAN') {
+      const newValue = `${dvMathOperator.Value}-${speMinAmount.Value}`;
+      const newText = `<${speMinAmount.Value}`;
+      this.setState({
+        valueTextPairDTO: {
+          value: newValue,
+          text: newText,
+        },
+      });
+    } else if (dvMathOperator.Value === 'GREATER_OR_EQUAL') {
+      const newValue = `${dvMathOperator.Value}-${speMinAmount.Value}`;
+      const newText = `>=${speMinAmount.Value}`;
+      this.setState({
+        valueTextPairDTO: {
+          value: newValue,
+          text: newText,
+        },
+      });
+    } else if (dvMathOperator.Value === 'SMALLER_OR_EQUAL') {
+      const newValue = `${dvMathOperator.Value}-${speMinAmount.Value}`;
+      const newText = `<=${speMinAmount.Value}`;
+      this.setState({
+        valueTextPairDTO: {
+          value: newValue,
+          text: newText,
+        },
+      });
+    } else if (dvMathOperator.Value === 'EQUALS') {
+      const newValue = `${dvMathOperator.Value}-${speMinAmount.Value}`;
+      const newText = `=${speMinAmount.Value}`;
+      this.setState({
+        valueTextPairDTO: {
+          value: newValue,
+          text: newText,
+        },
+      });
+    }
+
+    // Diğer state değerlerini gerektiği gibi ayarlayın
+
+    // DialogResult ve istisnaları ele alın
+    // ...
+
+  } catch (ex) {
+    // İstisnaları ele alın
+    // ...
+  }
+};
+
+render() {
+  const { speMaxAmount, dvMathOperator } = this.state;
+
+  return (
+    <div>
+      {/* Giriş alanlarını ve diğer UI bileşenlerini render edin */}
+      {/* Örnek: */}
+      <input
+        type="text"
+        value={dvMathOperator.Value}
+        onChange={this.handleMathOperatorChange}
+      />
+      {dvMathOperator.Value === 'BETWEEN' && (
+        <input
+          type="text"
+          value={speMaxAmount.Value}
+          onChange={(e) => this.setState({ speMaxAmount: { Value: e.target.value } })}
+        />
+      )}
+      {/* Koşullu mantığı burada uygulayın */}
+      {/* Örnek: */}
+      {dvMathOperator.Value === 'BETWEEN' && <p>Arasında durumu</p>}
+    </div>
+  );
+}
+}
+
+export default FilterByAmount;
