@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import DataGrid, { Column, Editing, Popup, Form, Item } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import { SelectBox } from 'devextreme-react/select-box';
-import axios from 'axios';
+import Button from 'devextreme-react/button';
+import Popup from 'devextreme-react/popup';
+import Form, { Item } from 'devextreme-react/form';
 
 const data = [
   { id: 1, combinedValue: 'Value1/Value2' },
@@ -11,14 +13,16 @@ const data = [
 const options1 = ['Option1', 'Option2', 'Option3'];
 const options2 = ['OptionA', 'OptionB', 'OptionC'];
 
-class App extends Component {
+class Tasks extends Component {
   constructor(props) {
     super(props);
     this.state = {
       gridData: data,
       selectedValue1: '',
       selectedValue2: '',
-      editingRowKey: null
+      editingRowKey: null,
+      isPopupVisible: false,
+      popupPosition: { my: 'left top', at: 'left bottom', of: null }
     };
   }
 
@@ -28,77 +32,107 @@ class App extends Component {
     const updatedData = gridData.map(item => 
       item.id === editingRowKey ? { ...item, combinedValue: newValue } : item
     );
-    this.setState({ gridData: updatedData });
+    this.setState({ gridData: updatedData, isPopupVisible: false });
   };
 
-  handleRowUpdating = (e) => {
-    this.setState({ editingRowKey: e.key });
-  };
-
-  handleSaveToServer = (rowData) => {
-    axios.post('/api/save', rowData)
-      .then(response => {
-        console.log('Data saved successfully:', response.data);
-      })
-      .catch(error => {
-        console.error('There was an error saving the data!', error);
+  handleCellClick = (e) => {
+    if (e.column.dataField === 'combinedValue' && e.row && e.row.data) {
+      this.setState({ 
+        editingRowKey: e.row.data.id, 
+        selectedValue1: e.row.data.combinedValue.split('/')[0],
+        selectedValue2: e.row.data.combinedValue.split('/')[1],
+        isPopupVisible: true,
+        popupPosition: { my: 'left top', at: 'left bottom', of: e.cellElement }
       });
+    }
+  };
+
+  handleRefresh = () => {
+    this.setState({ gridData: data });
+  };
+
+  handleCancel = () => {
+    this.setState({ isPopupVisible: false });
   };
 
   render() {
-    const { gridData, selectedValue1, selectedValue2 } = this.state;
+    const { gridData, selectedValue1, selectedValue2, isPopupVisible, popupPosition } = this.state;
 
     return (
       <div>
+        <Button text="Refresh" onClick={this.handleRefresh} />
         <DataGrid
           dataSource={gridData}
           keyExpr="id"
           showBorders={true}
-          onRowUpdating={this.handleRowUpdating}
+          onCellClick={this.handleCellClick}
         >
           <Editing
-            mode="popup"
+            mode="cell"
             allowUpdating={true}
             allowAdding={true}
             allowDeleting={true}
-          >
-            <Popup title="Edit Popup" showTitle={true} width={700} height={250} />
-            <Form>
-              <Item itemType="group" colCount={2} colSpan={2}>
-                <Item>
-                  <SelectBox
-                    dataSource={options1}
-                    value={selectedValue1}
-                    onValueChanged={(e) => this.setState({ selectedValue1: e.value })}
-                  />
-                </Item>
-                <Item>
-                  <SelectBox
-                    dataSource={options2}
-                    value={selectedValue2}
-                    onValueChanged={(e) => this.setState({ selectedValue2: e.value })}
-                  />
-                </Item>
-              </Item>
-              <Item>
-                <button type="button" onClick={this.handleSave}>Save</button>
-              </Item>
-            </Form>
-          </Editing>
-          <Column dataField="combinedValue" caption="Combined Value" />
-          <Column
-            type="buttons"
-            buttons={[
-              {
-                text: 'Save',
-                onClick: (e) => this.handleSaveToServer(e.row.data)
-              }
-            ]}
           />
+          <Column dataField="combinedValue" caption="Combined Value" />
         </DataGrid>
+
+        {isPopupVisible && (
+          <Popup 
+            title="Edit Popup" 
+            showTitle={true} 
+            visible={isPopupVisible} 
+            onHiding={() => this.setState({ isPopupVisible: false })} 
+            width={400} 
+            height={200}
+            position={popupPosition}
+            contentRender={() => (
+              <div style={{ backgroundColor: '#2c2c2c', color: '#fff', padding: '20px', borderRadius: '10px', fontFamily: 'Roboto', position: 'relative' }}>
+                <Form>
+                  <Item itemType="group" colCount={2} colSpan={2}>
+                    <Item>
+                      <SelectBox
+                        dataSource={options1}
+                        value={selectedValue1}
+                        onValueChanged={(e) => this.setState({ selectedValue1: e.value })}
+                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px' }}
+                      />
+                    </Item>
+                    <Item>
+                      <SelectBox
+                        dataSource={options2}
+                        value={selectedValue2}
+                        onValueChanged={(e) => this.setState({ selectedValue2: e.value })}
+                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px' }}
+                      />
+                    </Item>
+                  </Item>
+                  <Item>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button 
+                        text="Save" 
+                        onClick={this.handleSave} 
+                        style={{ backgroundColor: '#4CAF50', color: '#fff', marginRight: '10px', borderRadius: '5px' }}
+                      />
+                      <Button 
+                        text="Cancel" 
+                        onClick={this.handleCancel} 
+                        style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px' }}
+                      />
+                    </div>
+                  </Item>
+                </Form>
+                <Button 
+                  icon="close" 
+                  onClick={this.handleCancel} 
+                  style={{ position: 'absolute', top: '10px', right: '-50px', backgroundColor: 'transparent', color: '#fff' }}
+                />
+              </div>
+            )}
+          />
+        )}
       </div>
     );
   }
 }
 
-export default App;
+export default Tasks;
