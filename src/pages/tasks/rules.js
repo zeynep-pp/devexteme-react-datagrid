@@ -146,5 +146,55 @@ const AddButton = () => {
 
 export default AddButton;
 
+/* src/components/Button.css */
+.save-button {
+  background-color: #28a745; /* Yeşil renk */
+  border: none;
+  border-radius: 4px;
+  width: 100px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.save-button:hover {
+  background-color: #218838; /* Hover sırasında daha koyu yeşil */
+  transform: scale(1.05);
+}
+
+.save-button:active {
+  background-color: #1e7e34; /* Tıklama sırasında daha koyu yeşil */
+  transform: scale(1);
+}
+
+.cancel-button {
+  background-color: #dc3545; /* Kırmızı renk */
+  border: none;
+  border-radius: 4px;
+  width: 100px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #c82333; /* Hover sırasında daha koyu kırmızı */
+  transform: scale(1.05);
+}
+
+.cancel-button:active {
+  background-color: #bd2130; /* Tıklama sırasında daha koyu kırmızı */
+  transform: scale(1);
+}
 
 
