@@ -274,5 +274,33 @@ export default AddButton;
 .cancel-button:hover {
   background-color: #c82333; /* Hover sırasında daha koyu kırmızı */
 }
+///////////////////
+
+/* src/App.css */
+.dark-selectbox .dx-selectbox {
+  background-color: #333333; /* Koyu arka plan rengi */
+  border: 1px solid #444444; /* Koyu gri kenarlık */
+  border-radius: 4px; /* Hafif yuvarlatılmış köşeler */
+  color: #ffffff; /* Yazı rengi */
+}
+
+.dark-selectbox .dx-selectbox-item {
+  background-color: #333333; /* Koyu arka plan rengi */
+  color: #ffffff; /* Yazı rengi */
+}
+
+.dark-selectbox .dx-selectbox-item:hover {
+  background-color: #444444; /* Hover durumunda arka plan rengi */
+}
+
+.dark-selectbox .dx-selectbox-item.dx-state-selected {
+  background-color: #007bff; /* Seçili öğe için mavi arka plan */
+  color: #ffffff; /* Yazı rengi */
+}
+
+.dark-selectbox .dx-selectbox-dropdown {
+  background-color: #333333; /* Dropdown arka plan rengi */
+  border: 1px solid #444444; /* Koyu gri kenarlık */
+}
 
 
