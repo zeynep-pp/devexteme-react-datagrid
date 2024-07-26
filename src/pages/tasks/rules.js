@@ -198,3 +198,81 @@ export default AddButton;
 }
 
 
+/* src/App.css */
+.app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.open-popup-button {
+  background-color: #007bff; /* Mavi arka plan */
+  border: none;
+  border-radius: 4px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.open-popup-button:hover {
+  background-color: #0056b3; /* Hover sırasında daha koyu mavi */
+}
+
+.popup-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-content {
+  padding: 20px;
+}
+
+.popup-content h2 {
+  color: #007bff; /* Başlık için mavi renk */
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.selectbox {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.save-button,
+.cancel-button {
+  border: none;
+  border-radius: 4px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button {
+  background-color: #28a745; /* Yeşil arka plan */
+}
+
+.save-button:hover {
+  background-color: #218838; /* Hover sırasında daha koyu yeşil */
+}
+
+.cancel-button {
+  background-color: #dc3545; /* Kırmızı arka plan */
+}
+
+.cancel-button:hover {
+  background-color: #c82333; /* Hover sırasında daha koyu kırmızı */
+}
+
+
