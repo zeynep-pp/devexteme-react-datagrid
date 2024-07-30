@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
-import { SelectBox } from 'devextreme-react/select-box';
-import Button from 'devextreme-react/button';
-import Popup from 'devextreme-react/popup';
-import Form, { Item } from 'devextreme-react/form';
+import PopupComponent from './PopupComponent'; // PopupComponent'i import edin
 
 const data = [
-  { id: 1, combinedValue: 'Value1/Value2', newCombinedValue: '<1.000.000', selectBoxValues: '' },
+  { id: 1, combinedValue: 'Value1/Value2', newCombinedValue: '<1.000.000', selectBoxValues: '', additionalValues: '' },
   // Diğer veriler
 ];
 
@@ -27,9 +24,10 @@ class Tasks extends Component {
       isPopupVisible: false,
       isNewPopupVisible: false,
       isSelectBoxPopupVisible: false,
+      isAdditionalValuesPopupVisible: false,
       selectBoxOptions: options1,
       selectBoxValues: [''],
-      popupPosition: { my: 'center', at: 'center', of: window }
+      additionalValues: [''],
     };
   }
 
@@ -60,6 +58,15 @@ class Tasks extends Component {
     this.setState({ gridData: updatedData, isSelectBoxPopupVisible: false });
   };
 
+  handleAdditionalValuesSave = () => {
+    const { additionalValues, gridData, editingRowKey } = this.state;
+    const newAdditionalValues = additionalValues.filter(value => value).join(',');
+    const updatedData = gridData.map(item =>
+      item.id === editingRowKey ? { ...item, additionalValues: newAdditionalValues } : item
+    );
+    this.setState({ gridData: updatedData, isAdditionalValuesPopupVisible: false });
+  };
+
   handleCellClick = (e) => {
     if (e.column.dataField === 'combinedValue' && e.row && e.row.data) {
       const cellElement = e.cellElement;
@@ -67,35 +74,49 @@ class Tasks extends Component {
         editingRowKey: e.row.data.id,
         selectedValue1: e.row.data.combinedValue.split('/')[0],
         selectedValue2: e.row.data.combinedValue.split('/')[1],
-        isPopupVisible: true,
-        popupPosition: { my: 'top', at: 'bottom', of: cellElement }
+        isPopupVisible: true
       });
     } else if (e.column.dataField === 'newCombinedValue' && e.row && e.row.data) {
-      const cellElement = e.cellElement;
       this.setState({
         editingRowKey: e.row.data.id,
         selectedComparison: e.row.data.newCombinedValue[0],
         amount: e.row.data.newCombinedValue.slice(1),
-        isNewPopupVisible: true,
-        popupPosition: { my: 'top', at: 'bottom', of: cellElement }
+        isNewPopupVisible: true
       });
     } else if (e.column.dataField === 'selectBoxValues' && e.row && e.row.data) {
-      const cellElement = e.cellElement;
       this.setState({
         editingRowKey: e.row.data.id,
-        selectBoxValues: e.row.data.selectBoxValues ? e.row.data.selectBoxValues.split(',') : [''],
-        isSelectBoxPopupVisible: true,
-        popupPosition: { my: 'top', at: 'bottom', of: cellElement }
+        selectBoxValues: e.row.data.selectBoxValues.split(',').filter(value => value),
+        isSelectBoxPopupVisible: true
+      });
+    } else if (e.column.dataField === 'additionalValues' && e.row && e.row.data) {
+      this.setState({
+        editingRowKey: e.row.data.id,
+        additionalValues: e.row.data.additionalValues.split(',').filter(value => value),
+        isAdditionalValuesPopupVisible: true
       });
     }
   };
 
-  handleRefresh = () => {
-    this.setState({ gridData: data });
+  handleCancel = () => {
+    this.setState({
+      isPopupVisible: false,
+      isNewPopupVisible: false,
+      isSelectBoxPopupVisible: false,
+      isAdditionalValuesPopupVisible: false
+    });
   };
 
-  handleCancel = () => {
-    this.setState({ isPopupVisible: false, isNewPopupVisible: false, isSelectBoxPopupVisible: false });
+  handleSelectBoxChange = (index, value) => {
+    const newValues = [...this.state.selectBoxValues];
+    newValues[index] = value;
+    this.setState({ selectBoxValues: newValues });
+  };
+
+  handleAdditionalValueChange = (index, value) => {
+    const newValues = [...this.state.additionalValues];
+    newValues[index] = value;
+    this.setState({ additionalValues: newValues });
   };
 
   handleAddSelectBox = () => {
@@ -104,190 +125,92 @@ class Tasks extends Component {
     }));
   };
 
-  handleSelectBoxChange = (index, value) => {
-    this.setState(prevState => {
-      const newSelectBoxValues = [...prevState.selectBoxValues];
-      newSelectBoxValues[index] = value;
-      return { selectBoxValues: newSelectBoxValues };
-    });
+  handleAddAdditionalValue = () => {
+    this.setState(prevState => ({
+      additionalValues: [...prevState.additionalValues, '']
+    }));
   };
 
   render() {
-    const { gridData, selectedValue1, selectedValue2, selectedComparison, amount, isPopupVisible, isNewPopupVisible, isSelectBoxPopupVisible, popupPosition, selectBoxOptions, selectBoxValues } = this.state;
+    const {
+      gridData, 
+      isPopupVisible, 
+      isNewPopupVisible, 
+      isSelectBoxPopupVisible, 
+      isAdditionalValuesPopupVisible,
+      selectBoxOptions,
+      selectBoxValues,
+      additionalValues,
+      selectedValue1,
+      selectedValue2,
+      selectedComparison,
+      amount
+    } = this.state;
 
     return (
       <div>
-        <Button text="Refresh" onClick={this.handleRefresh} />
         <DataGrid
           dataSource={gridData}
-          keyExpr="id"
           showBorders={true}
           onCellClick={this.handleCellClick}
         >
+          <Column dataField="combinedValue" />
+          <Column dataField="newCombinedValue" />
+          <Column dataField="selectBoxValues" />
+          <Column dataField="additionalValues" />
           <Editing
             mode="cell"
             allowUpdating={true}
-            allowAdding={true}
-            allowDeleting={true}
           />
-          <Column dataField="combinedValue" caption="Combined Value" />
-          <Column dataField="newCombinedValue" caption="New Combined Value" />
-          <Column dataField="selectBoxValues" caption="Select Box Values" />
         </DataGrid>
 
-        {isPopupVisible && (
-          <Popup 
-            title="Edit Popup"
-            showTitle={true} 
-            visible={isPopupVisible} 
-            onHiding={() => this.setState({ isPopupVisible: false })} 
-            width={400} 
-            height={200}
-            position={popupPosition}
-            showCloseButton={true}
-            contentRender={() => (
-              <div style={{ backgroundColor: '#2c2c2c', color: '#fff', padding: '20px', borderRadius: '10px', fontFamily: 'Roboto', position: 'relative' }}>
-                <Form>
-                  <Item itemType="group" colCount={2} colSpan={2}>
-                    <Item>
-                      <SelectBox
-                        dataSource={options1}
-                        value={selectedValue1}
-                        onValueChanged={(e) => this.setState({ selectedValue1: e.value })}
-                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </Item>
-                    <Item>
-                      <SelectBox
-                        dataSource={options2}
-                        value={selectedValue2}
-                        onValueChanged={(e) => this.setState({ selectedValue2: e.value })}
-                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </Item>
-                  </Item>
-                  <Item>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button 
-                        text="Save" 
-                        onClick={this.handleSave} 
-                        style={{ backgroundColor: '#4CAF50', color: '#fff', marginRight: '10px', borderRadius: '5px' }}
-                      />
-                      <Button 
-                        text="Cancel" 
-                        onClick={this.handleCancel} 
-                        style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </div>
-                  </Item>
-                </Form>
-              </div>
-            )}
-          />
-        )}
+        <PopupComponent
+          title="Edit Combined Value"
+          visible={isPopupVisible}
+          onHiding={this.handleCancel}
+          onSave={this.handleSave}
+          onCancel={this.handleCancel}
+          selectedValue1={selectedValue1}
+          setSelectedValue1={(value) => this.setState({ selectedValue1: value })}
+          selectedValue2={selectedValue2}
+          setSelectedValue2={(value) => this.setState({ selectedValue2: value })}
+          selectBoxOptions={selectBoxOptions}
+        />
 
-        {isNewPopupVisible && (
-          <Popup 
-            title="Edit New Popup"
-            showTitle={true} 
-            visible={isNewPopupVisible} 
-            onHiding={() => this.setState({ isNewPopupVisible: false })} 
-            width={400} 
-            height={200}
-            position={popupPosition}
-            showCloseButton={true}
-            contentRender={() => (
-              <div style={{ backgroundColor: '#2c2c2c', color: '#fff', padding: '20px', borderRadius: '10px', fontFamily: 'Roboto', position: 'relative' }}>
-                <Form>
-                  <Item itemType="group" colCount={2} colSpan={2}>
-                    <Item>
-                      <SelectBox
-                        dataSource={comparisonOptions}
-                        value={selectedComparison}
-                        onValueChanged={(e) => this.setState({ selectedComparison: e.value })}
-                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </Item>
-                    <Item>
-                      <input
-                        type="text"
-                        value={amount}
-                        onChange={(e) => this.setState({ amount: e.target.value })}
-                        style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px', width: '100%' }}
-                      />
-                    </Item>
-                  </Item>
-                  <Item>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button 
-                        text="Save" 
-                        onClick={this.handleNewSave} 
-                        style={{ backgroundColor: '#4CAF50', color: '#fff', marginRight: '10px', borderRadius: '5px' }}
-                      />
-                      <Button 
-                        text="Cancel" 
-                        onClick={this.handleCancel} 
-                        style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </div>
-                  </Item>
-                </Form>
-              </div>
-            )}
-          />
-        )}
+        <PopupComponent
+          title="Edit New Popup"
+          visible={isNewPopupVisible}
+          onHiding={this.handleCancel}
+          onSave={this.handleNewSave}
+          onCancel={this.handleCancel}
+          selectedComparison={selectedComparison}
+          setSelectedComparison={(value) => this.setState({ selectedComparison: value })}
+          amount={amount}
+          setAmount={(value) => this.setState({ amount: value })}
+        />
 
-        {isSelectBoxPopupVisible && (
-          <Popup 
-            title="Edit Select Box Popup"
-            showTitle={true} 
-            visible={isSelectBoxPopupVisible} 
-            onHiding={() => this.setState({ isSelectBoxPopupVisible: false })} 
-            width={400} 
-            height={300}
-            position={popupPosition}
-            showCloseButton={true}
-            contentRender={() => (
-              <div style={{ backgroundColor: '#2c2c2c', color: '#fff', padding: '20px', borderRadius: '10px', fontFamily: 'Roboto', position: 'relative' }}>
-                <Form>
-                  <Item itemType="group" colCount={1} colSpan={1}>
-                    {selectBoxValues.map((value, index) => (
-                      <Item key={index}>
-                        <SelectBox
-                          dataSource={selectBoxOptions}
-                          value={value}
-                          onValueChanged={(e) => this.handleSelectBoxChange(index, e.value)}
-                          style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px', marginBottom: '10px' }}
-                        />
-                      </Item>
-                    ))}
-                    <Item>
-                      <Button
-                        text="Add SelectBox"
-                        onClick={this.handleAddSelectBox}
-                        style={{ backgroundColor: '#2196F3', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </Item>
-                  </Item>
-                  <Item>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button 
-                        text="Save" 
-                        onClick={this.handleSelectBoxSave} 
-                        style={{ backgroundColor: '#4CAF50', color: '#fff', marginRight: '10px', borderRadius: '5px' }}
-                      />
-                      <Button 
-                        text="Cancel" 
-                        onClick={this.handleCancel} 
-                        style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px' }}
-                      />
-                    </div>
-                  </Item>
-                </Form>
-              </div>
-            )}
-          />
-        )}
+        <PopupComponent
+          title="Edit Select Box Popup"
+          visible={isSelectBoxPopupVisible}
+          onHiding={this.handleCancel}
+          onSave={this.handleSelectBoxSave}
+          onCancel={this.handleCancel}
+          selectBoxValues={selectBoxValues}
+          onSelectBoxChange={this.handleSelectBoxChange}
+          addSelectBoxValue={this.handleAddSelectBox}
+          selectBoxOptions={selectBoxOptions}
+        />
+
+        <PopupComponent
+          title="Edit Additional Values Popup"
+          visible={isAdditionalValuesPopupVisible}
+          onHiding={this.handleCancel}
+          onSave={this.handleAdditionalValuesSave}
+          onCancel={this.handleCancel}
+          additionalValues={additionalValues}
+          onAdditionalValueChange={this.handleAdditionalValueChange}
+          addAdditionalValue={this.handleAddAdditionalValue}
+        />
       </div>
     );
   }
