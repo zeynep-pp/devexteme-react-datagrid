@@ -5,7 +5,7 @@ import { Form, Item, GroupItem, RequiredRule, EmailRule, PatternRule } from 'dev
 import { DataGrid, Column } from 'devextreme-react/data-grid';
 import { Popup } from 'devextreme-react/popup';
 import notify from 'devextreme/ui/notify';
-import { FaSun, FaMoon } from 'react-icons/fa'; // FontAwesome ikonları
+import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch } from 'react-icons/fa'; // FontAwesome ikonları
 import './product.css'; // CSS dosyasını import et
 
 const customers = [
@@ -92,7 +92,7 @@ class product extends Component {
           </label>
         </div>
         <h2>Müşteri Formu</h2>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
           <TextBox
             value={customerNumber}
             onValueChanged={this.handleCustomerNumberChange}
@@ -101,12 +101,12 @@ class product extends Component {
             style={{ color: 'var(--text-color)', backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', borderRadius: '4px', padding: '10px', boxSizing: 'border-box' }}
           />
           <Button
-            text="Ara"
             onClick={this.handleSearchCustomer}
-            type="default"
-            width="120px"
-            className="button"
-          />
+            className="button default"
+            style={{ width: '120px', marginLeft: '10px' }}
+          >
+            <FaSearch /> Ara
+          </Button>
         </div>
         {isFormVisible && (
           <Form
@@ -125,41 +125,36 @@ class product extends Component {
               </Item>
               <Item dataField="email" editorType="dxTextBox">
                 <RequiredRule message="Email zorunludur" />
-                <EmailRule message="Geçerli bir email adresi girin" />
+                <EmailRule message="Geçerli bir e-posta adresi girin" />
               </Item>
               <Item dataField="phone" editorType="dxTextBox">
                 <RequiredRule message="Telefon numarası zorunludur" />
                 <PatternRule pattern="^\\d{3}-\\d{3}-\\d{4}$" message="Telefon numarası geçerli değil" />
               </Item>
-              {/* Diğer müşteri alanları */}
             </GroupItem>
           </Form>
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
           <Button
-            text={isEditing ? 'Güncelle' : 'Kaydet'}
             onClick={this.handleSaveCustomer}
-            type="success"
-            width="48%"
             className="button success"
-            disabled={!isFormVisible}
-          />
+          >
+            <FaSave /> {isEditing ? 'Güncelle' : 'Kaydet'}
+          </Button>
           <Button
-            text="Yeni Müşteri"
             onClick={this.handleNewCustomer}
-            type="default"
-            width="48%"
             className="button default"
-          />
+          >
+            <FaUserPlus /> Yeni Müşteri
+          </Button>
         </div>
         <Button
-          text="Geri Dön"
           onClick={this.handleBack}
-          type="default"
-          width="100%"
           className="button default"
-          style={{ marginTop: '20px' }}
-        />
+          style={{ width: '100%', marginTop: '20px' }}
+        >
+          <FaArrowLeft /> Geri Dön
+        </Button>
         {isPopupVisible && (
           <Popup
             visible={isPopupVisible}

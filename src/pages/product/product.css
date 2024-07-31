@@ -6,9 +6,11 @@
   --text-color: #fff;
   --input-bg: #444;
   --input-border: #555;
-  --button-bg: #003366; /* Koyu mavi */
+  --button-bg: #0056b3; /* Koyu mavi */
   --button-text: #fff;
-  --button-border: #002a4b; /* Daha koyu mavi */
+  --button-border: #004494; /* Daha koyu mavi */
+  --grid-border: #444; /* Koyu temaya uygun grid kenar rengi */
+  --grid-hover-border: #0056b3; /* Koyu mavi hover sınırı */
 }
 
 .light-theme {
@@ -16,9 +18,11 @@
   --text-color: #000;
   --input-bg: #fff;
   --input-border: #ccc;
-  --button-bg: #003366; /* Koyu mavi */
+  --button-bg: #007bff; /* Açık mavi */
   --button-text: #fff;
-  --button-border: #002a4b; /* Daha koyu mavi */
+  --button-border: #0056b3; /* Koyu mavi */
+  --grid-border: #ccc; /* Açık temaya uygun grid kenar rengi */
+  --grid-hover-border: #007bff; /* Açık mavi hover sınırı */
 }
 
 .customer-form {
@@ -67,7 +71,7 @@
 }
 
 input:checked + .slider {
-  background-color: #003366; /* Koyu mavi */
+  background-color: #0056b3; /* Koyu mavi */
 }
 
 input:checked + .slider:before {
@@ -105,10 +109,13 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  box-sizing: border-box;
 }
 
 .button.success {
-  background-color: #003366; /* Koyu mavi */
+  background-color: var(--button-bg);
 }
 
 .button.default {
@@ -123,12 +130,36 @@ h2 {
 
 .button svg {
   margin-right: 5px;
+  font-size: 16px; /* İkon büyüklüğünü ayarla */
 }
 
 input[type="text"] {
   border: 1px solid var(--input-border);
+  color: var(--text-color);
+  background-color: var(--input-bg);
 }
 
-.popup-title {
-  font-size: 18px;
+.dx-datagrid {
+  border: 1px solid var(--grid-border) !important;
+}
+
+.dx-datagrid .dx-data-row {
+  border: 1px solid var(--grid-border) !important;
+}
+
+.dx-datagrid .dx-data-row:hover {
+  border: 1px solid var(--grid-hover-border) !important;
+}
+
+.dx-datagrid .dx-header-row {
+  color: var(--text-color);
+}
+
+.dx-datagrid .dx-header-row .dx-datagrid-text-content {
+  color: var(--text-color);
+}
+
+/* Form elemanları */
+.dx-form .dx-item-label {
+  color: var(--text-color) !important;
 }
