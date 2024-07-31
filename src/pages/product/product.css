@@ -1,113 +1,134 @@
 /* CustomerForm.css */
 
-/* Temalar */
-.light-theme {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --input-bg: #f0f0f0;
-  --input-border: #cccccc;
-}
-
+/* Genel tema sınıfları */
 .dark-theme {
-  --bg-color: #333333;
-  --text-color: #ffffff;
-  --input-bg: #444444;
-  --input-border: #555555;
+  --background: #333;
+  --text-color: #fff;
+  --input-bg: #444;
+  --input-border: #555;
+  --button-bg: #003366; /* Koyu mavi */
+  --button-text: #fff;
+  --button-border: #002a4b; /* Daha koyu mavi */
 }
 
-/* Form ve diğer stiller */
+.light-theme {
+  --background: #f9f9f9;
+  --text-color: #000;
+  --input-bg: #fff;
+  --input-border: #ccc;
+  --button-bg: #003366; /* Koyu mavi */
+  --button-text: #fff;
+  --button-border: #002a4b; /* Daha koyu mavi */
+}
+
 .customer-form {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid var(--input-border);
-  border-radius: 8px;
-  background-color: var(--bg-color);
+  background-color: var(--background);
   color: var(--text-color);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid var(--input-border);
 }
 
-.customer-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.customer-form button {
-  margin-top: 10px;
-}
-
-/* Tema değiştirici kaydırıcı (toggle switch) */
 .theme-toggle-container {
   display: flex;
-  align-items: center;
+  justify-content: flex-end;
   margin-bottom: 20px;
 }
 
 .theme-toggle {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .theme-toggle input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+  display: none;
 }
 
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  width: 50px;
+  height: 20px;
   background-color: #ccc;
-  transition: .4s;
-  border-radius: 34px;
+  border-radius: 20px;
+  transition: background-color 0.3s;
 }
 
 .slider:before {
-  position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
-  border-radius: 50%;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: .4s;
-}
-
-/* İkonlar */
-.slider-icon {
   position: absolute;
-  font-size: 18px;
-  color: #666;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.slider-icon.sun {
-  left: 8px;
-}
-
-.slider-icon.moon {
-  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: transform 0.3s;
 }
 
 input:checked + .slider {
-  background-color: #007bff;
+  background-color: #003366; /* Koyu mavi */
 }
 
 input:checked + .slider:before {
-  transform: translateX(26px);
+  transform: translateX(30px);
 }
 
-input:checked + .slider .slider-icon.sun {
-  color: #666;
+.slider-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text-color);
 }
 
-input:checked + .slider .slider-icon.moon {
-  color: #fff;
+.sun {
+  left: 5px;
+}
+
+.moon {
+  right: 5px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--button-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button.success {
+  background-color: #003366; /* Koyu mavi */
+}
+
+.button.default {
+  background-color: var(--button-bg);
+}
+
+.button .dx-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button svg {
+  margin-right: 5px;
+}
+
+input[type="text"] {
+  border: 1px solid var(--input-border);
+}
+
+.popup-title {
+  font-size: 18px;
 }

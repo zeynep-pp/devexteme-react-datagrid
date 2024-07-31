@@ -5,6 +5,7 @@ import { Form, Item, GroupItem, RequiredRule, EmailRule, PatternRule } from 'dev
 import { DataGrid, Column } from 'devextreme-react/data-grid';
 import { Popup } from 'devextreme-react/popup';
 import notify from 'devextreme/ui/notify';
+import { FaSun, FaMoon } from 'react-icons/fa'; // FontAwesome ikonları
 import './product.css'; // CSS dosyasını import et
 
 const customers = [
@@ -82,15 +83,13 @@ class product extends Component {
     return (
       <div className={`customer-form ${themeClass}`}>
         <div className="theme-toggle-container">
-          <span style={{ marginRight: '10px' }}>Koyu Tema</span>
           <label className="theme-toggle">
             <input type="checkbox" checked={!isDarkTheme} onChange={this.toggleTheme} />
             <span className="slider">
-              <span className="slider-icon sun">&#9728;</span>
-              <span className="slider-icon moon">&#9790;</span>
+              <FaSun className="slider-icon sun" />
+              <FaMoon className="slider-icon moon" />
             </span>
           </label>
-          <span style={{ marginLeft: '10px' }}>Açık Tema</span>
         </div>
         <h2>Müşteri Formu</h2>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -106,7 +105,7 @@ class product extends Component {
             onClick={this.handleSearchCustomer}
             type="default"
             width="120px"
-            style={{ backgroundColor: '#007bff', color: '#fff', borderRadius: '4px', padding: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', transition: 'background-color 0.3s', marginLeft: '10px' }}
+            className="button"
           />
         </div>
         {isFormVisible && (
@@ -126,12 +125,13 @@ class product extends Component {
               </Item>
               <Item dataField="email" editorType="dxTextBox">
                 <RequiredRule message="Email zorunludur" />
-                <EmailRule message="Geçerli bir e-posta adresi girin" />
+                <EmailRule message="Geçerli bir email adresi girin" />
               </Item>
               <Item dataField="phone" editorType="dxTextBox">
                 <RequiredRule message="Telefon numarası zorunludur" />
-                <PatternRule pattern="^\\+?\\d{10,13}$" message="Geçerli bir telefon numarası girin" />
+                <PatternRule pattern="^\\d{3}-\\d{3}-\\d{4}$" message="Telefon numarası geçerli değil" />
               </Item>
+              {/* Diğer müşteri alanları */}
             </GroupItem>
           </Form>
         )}
@@ -140,16 +140,16 @@ class product extends Component {
             text={isEditing ? 'Güncelle' : 'Kaydet'}
             onClick={this.handleSaveCustomer}
             type="success"
-            disabled={!isFormVisible}
             width="48%"
-            style={{ backgroundColor: '#4caf50', color: '#fff', borderRadius: '4px', padding: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', transition: 'background-color 0.3s' }}
+            className="button success"
+            disabled={!isFormVisible}
           />
           <Button
             text="Yeni Müşteri"
             onClick={this.handleNewCustomer}
             type="default"
             width="48%"
-            style={{ backgroundColor: '#007bff', color: '#fff', borderRadius: '4px', padding: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', transition: 'background-color 0.3s' }}
+            className="button default"
           />
         </div>
         <Button
@@ -157,7 +157,8 @@ class product extends Component {
           onClick={this.handleBack}
           type="default"
           width="100%"
-          style={{ backgroundColor: '#343a40', color: '#fff', borderRadius: '4px', padding: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', transition: 'background-color 0.3s', marginTop: '20px' }}
+          className="button default"
+          style={{ marginTop: '20px' }}
         />
         {isPopupVisible && (
           <Popup
