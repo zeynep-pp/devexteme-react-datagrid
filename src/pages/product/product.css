@@ -1,0 +1,113 @@
+/* CustomerForm.css */
+
+/* Temalar */
+.light-theme {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --input-bg: #f0f0f0;
+  --input-border: #cccccc;
+}
+
+.dark-theme {
+  --bg-color: #333333;
+  --text-color: #ffffff;
+  --input-bg: #444444;
+  --input-border: #555555;
+}
+
+/* Form ve diğer stiller */
+.customer-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.customer-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.customer-form button {
+  margin-top: 10px;
+}
+
+/* Tema değiştirici kaydırıcı (toggle switch) */
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.theme-toggle {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.theme-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  border-radius: 50%;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+/* İkonlar */
+.slider-icon {
+  position: absolute;
+  font-size: 18px;
+  color: #666;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.slider-icon.sun {
+  left: 8px;
+}
+
+.slider-icon.moon {
+  right: 8px;
+}
+
+input:checked + .slider {
+  background-color: #007bff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+input:checked + .slider .slider-icon.sun {
+  color: #666;
+}
+
+input:checked + .slider .slider-icon.moon {
+  color: #fff;
+}

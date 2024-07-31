@@ -1,0 +1,44 @@
+.crm-data-grid-container {
+    margin: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .toolbar {
+    margin-bottom: 10px;
+  }
+  
+  .toolbar-header {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .dx-data-grid {
+    font-family: Arial, sans-serif;
+  }
+  
+  .dx-header-row {
+    background-color: #f5f5f5;
+  }
+  
+  .dx-filter-row {
+    background-color: #fafafa;
+  }
+  
+  .dx-data-row {
+    background-color: #ffffff;
+  }
+  
+  .dx-data-row.dx-row-alt {
+    background-color: #f9f9f9;
+  }
+  
+  .dx-row:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dx-toolbar {
+    border-bottom: 1px solid #ddd;
+  }
+  
