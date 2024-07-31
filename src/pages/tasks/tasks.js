@@ -131,6 +131,18 @@ class Tasks extends Component {
     }));
   };
 
+  handleRemoveSelectBoxValue = (index) => {
+    this.setState(prevState => ({
+      selectBoxValues: prevState.selectBoxValues.filter((_, i) => i !== index)
+    }));
+  };
+
+  handleRemoveAdditionalValue = (index) => {
+    this.setState(prevState => ({
+      additionalValues: prevState.additionalValues.filter((_, i) => i !== index)
+    }));
+  };
+
   render() {
     const {
       gridData, 
@@ -198,6 +210,7 @@ class Tasks extends Component {
           selectBoxValues={selectBoxValues}
           onSelectBoxChange={this.handleSelectBoxChange}
           addSelectBoxValue={this.handleAddSelectBox}
+          onRemoveSelectBoxValue={this.handleRemoveSelectBoxValue}
           selectBoxOptions={selectBoxOptions}
         />
 
@@ -210,6 +223,7 @@ class Tasks extends Component {
           additionalValues={additionalValues}
           onAdditionalValueChange={this.handleAdditionalValueChange}
           addAdditionalValue={this.handleAddAdditionalValue}
+          onRemoveAdditionalValue={this.handleRemoveAdditionalValue}
         />
       </div>
     );

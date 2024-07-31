@@ -12,8 +12,10 @@ const PopupComponent = ({
   onCancel, 
   selectBoxValues, 
   onSelectBoxChange, 
+  onRemoveSelectBoxValue, 
   additionalValues, 
   onAdditionalValueChange, 
+  onRemoveAdditionalValue, 
   selectedValue1, 
   setSelectedValue1, 
   selectedValue2, 
@@ -47,6 +49,11 @@ const PopupComponent = ({
                   onValueChanged={(e) => onSelectBoxChange(index, e.value)}
                   style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px', marginBottom: '10px' }}
                 />
+                <Button
+                  text="Remove"
+                  onClick={() => onRemoveSelectBoxValue(index)}
+                  style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px', marginLeft: '10px' }}
+                />
               </Item>
             ))}
             {title.includes('Additional Values') && additionalValues.map((value, index) => (
@@ -56,7 +63,12 @@ const PopupComponent = ({
                   value={value}
                   onChange={(e) => onAdditionalValueChange(index, e.target.value)}
                   style={{ backgroundColor: '#444', color: '#fff', borderRadius: '5px', width: '100%', marginBottom: '10px' }}
-                />x
+                />
+                <Button
+                  text="Remove"
+                  onClick={() => onRemoveAdditionalValue(index)}
+                  style={{ backgroundColor: '#f44336', color: '#fff', borderRadius: '5px', marginLeft: '10px' }}
+                />
               </Item>
             ))}
             {title.includes('Combined Value') && (
