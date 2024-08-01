@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
-import { TextBox } from 'devextreme-react/text-box';
+import { TextBox, SelectBox, CheckBox } from 'devextreme-react';
 import { Button } from 'devextreme-react/button';
 import { Form, Item, GroupItem, RequiredRule, EmailRule, PatternRule } from 'devextreme-react/form';
 import { DataGrid, Column } from 'devextreme-react/data-grid';
 import { Popup } from 'devextreme-react/popup';
 import notify from 'devextreme/ui/notify';
-import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch } from 'react-icons/fa'; // FontAwesome ikonları
+import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch } from 'react-icons/fa';
 import './product.css'; // CSS dosyasını import et
 
 const customers = [
-  { customerNumber: '123', name: 'John Doe', email: 'john@example.com', phone: '555-1234' },
-  { customerNumber: '456', name: 'Jane Smith', email: 'jane@example.com', phone: '555-5678' }
+  { customerNumber: '123', name: 'John Doe', taxId: '111-22-3333', registrationNo: '123456789', customerSegment: 'Retail', salesDesk: 'Desk A', customerStatus: 'Active', channelPermissions: ['Email', 'Phone'] },
+  { customerNumber: '456', name: 'Jane Smith', taxId: '444-55-6666', registrationNo: '987654321', customerSegment: 'Wholesale', salesDesk: 'Desk B', customerStatus: 'Inactive', channelPermissions: ['Phone'] }
 ];
 
-class product extends Component {
+const customerSegments = ['Retail', 'Wholesale', 'Corporate'];
+const salesDesks = ['Desk A', 'Desk B', 'Desk C'];
+const customerStatuses = ['Active', 'Inactive', 'Pending'];
+
+class Product extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,7 +26,7 @@ class product extends Component {
       isEditing: false,
       isFormVisible: false,
       isPopupVisible: false,
-      isDarkTheme: true // Varsayılan tema koyu
+      isDarkTheme: true
     };
 
     this.handleCustomerNumberChange = this.handleCustomerNumberChange.bind(this);
@@ -116,20 +120,39 @@ class product extends Component {
               this.setState({ customerData: updatedCustomerData });
             }}
           >
-            <GroupItem colCount={1}>
+            <GroupItem colCount={2}>
               <Item dataField="customerNumber" editorType="dxTextBox">
                 <RequiredRule message="Müşteri numarası zorunludur" />
               </Item>
               <Item dataField="name" editorType="dxTextBox">
                 <RequiredRule message="İsim zorunludur" />
               </Item>
-              <Item dataField="email" editorType="dxTextBox">
-                <RequiredRule message="Email zorunludur" />
-                <EmailRule message="Geçerli bir e-posta adresi girin" />
+              <Item dataField="taxId" editorType="dxTextBox">
+                <RequiredRule message="Vergi numarası zorunludur" />
               </Item>
-              <Item dataField="phone" editorType="dxTextBox">
-                <RequiredRule message="Telefon numarası zorunludur" />
-                <PatternRule pattern="^\\d{3}-\\d{3}-\\d{4}$" message="Telefon numarası geçerli değil" />
+              <Item dataField="registrationNo" editorType="dxTextBox">
+                <RequiredRule message="Ticaret numarası zorunludur" />
+              </Item>
+            </GroupItem>
+            <GroupItem colCount={3}>
+              <Item dataField="customerSegment" editorType="dxSelectBox" editorOptions={{ items: customerSegments, value: customerData?.customerSegment }}>
+                <RequiredRule message="Müşteri segmenti zorunludur" />
+              </Item>
+              <Item dataField="salesDesk" editorType="dxSelectBox" editorOptions={{ items: salesDesks, value: customerData?.salesDesk }}>
+                <RequiredRule message="Satış masası zorunludur" />
+              </Item>
+              <Item dataField="customerStatus" editorType="dxSelectBox" editorOptions={{ items: customerStatuses, value: customerData?.customerStatus }}>
+                <RequiredRule message="Müşteri durumu zorunludur" />
+              </Item>
+            </GroupItem>
+            <GroupItem colCount={1}>
+              <Item dataField="channelPermissions">
+                <RequiredRule message="Kanal izinleri zorunludur" />
+                <div className="channel-permissions">
+                  <CheckBox text="E-posta" value={customerData?.channelPermissions?.includes('Email')} onValueChanged={(e) => this.setState({ customerData: { ...customerData, channelPermissions: e.value ? [...(customerData.channelPermissions || []), 'Email'] : (customerData.channelPermissions || []).filter(p => p !== 'Email') } })} />
+                  <CheckBox text="Telefon" value={customerData?.channelPermissions?.includes('Phone')} onValueChanged={(e) => this.setState({ customerData: { ...customerData, channelPermissions: e.value ? [...(customerData.channelPermissions || []), 'Phone'] : (customerData.channelPermissions || []).filter(p => p !== 'Phone') } })} />
+                  <CheckBox text="Posta" value={customerData?.channelPermissions?.includes('Mail')} onValueChanged={(e) => this.setState({ customerData: { ...customerData, channelPermissions: e.value ? [...(customerData.channelPermissions || []), 'Mail'] : (customerData.channelPermissions || []).filter(p => p !== 'Mail') } })} />
+                </div>
               </Item>
             </GroupItem>
           </Form>
@@ -175,8 +198,12 @@ class product extends Component {
             >
               <Column dataField="customerNumber" />
               <Column dataField="name" />
-              <Column dataField="email" />
-              <Column dataField="phone" />
+              <Column dataField="taxId" />
+              <Column dataField="registrationNo" />
+              <Column dataField="customerSegment" />
+              <Column dataField="salesDesk" />
+              <Column dataField="customerStatus" />
+              <Column dataField="channelPermissions" />
             </DataGrid>
           </Popup>
         )}
@@ -185,4 +212,4 @@ class product extends Component {
   }
 }
 
-export default product;
+export default Product;
