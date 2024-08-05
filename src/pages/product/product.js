@@ -1,11 +1,12 @@
+
 import React, { Component } from 'react';
 import { TextBox, SelectBox, CheckBox } from 'devextreme-react';
 import { Button } from 'devextreme-react/button';
-import { Form, Item, GroupItem, RequiredRule, EmailRule, PatternRule } from 'devextreme-react/form';
+import { Form, Item, GroupItem, RequiredRule } from 'devextreme-react/form';
 import { DataGrid, Column } from 'devextreme-react/data-grid';
 import { Popup } from 'devextreme-react/popup';
 import notify from 'devextreme/ui/notify';
-import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch, FaList } from 'react-icons/fa';
 import './product.css'; // CSS dosyasını import et
 
 const customers = [
@@ -26,7 +27,8 @@ class Product extends Component {
       isEditing: false,
       isFormVisible: false,
       isPopupVisible: false,
-      isDarkTheme: true
+      isDarkTheme: true,
+      isCustomerListPopupVisible: false // Add state for the customer list popup
     };
 
     this.handleCustomerNumberChange = this.handleCustomerNumberChange.bind(this);
@@ -36,6 +38,7 @@ class Product extends Component {
     this.handleBack = this.handleBack.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.toggleTheme = this.toggleTheme.bind(this);
+    this.toggleCustomerListPopup = this.toggleCustomerListPopup.bind(this);
   }
 
   handleCustomerNumberChange(e) {
@@ -58,14 +61,13 @@ class Product extends Component {
     if (isEditing) {
       notify('Müşteri güncellendi.', 'success', 2000);
     } else {
-      customers.push(customerData);
-      notify('Müşteri eklendi.', 'success', 2000);
+      notify('Yeni müşteri kaydedildi.', 'success', 2000);
     }
-    this.setState({ isFormVisible: false });
+    // Here you would typically also update the customers array
   }
 
   handleNewCustomer() {
-    this.setState({ customerData: { customerNumber: '' }, isEditing: false, isFormVisible: true });
+    this.setState({ customerNumber: '', customerData: { customerNumber: '' }, isEditing: false, isFormVisible: true });
   }
 
   handleBack() {
@@ -80,8 +82,12 @@ class Product extends Component {
     this.setState(prevState => ({ isDarkTheme: !prevState.isDarkTheme }));
   }
 
+  toggleCustomerListPopup() {
+    this.setState(prevState => ({ isCustomerListPopupVisible: !prevState.isCustomerListPopupVisible }));
+  }
+
   render() {
-    const { customerNumber, customerData, isEditing, isFormVisible, isPopupVisible, isDarkTheme } = this.state;
+    const { customerNumber, customerData, isEditing, isFormVisible, isPopupVisible, isDarkTheme, isCustomerListPopupVisible } = this.state;
     const themeClass = isDarkTheme ? 'dark-theme' : 'light-theme';
 
     return (
@@ -135,13 +141,13 @@ class Product extends Component {
               </Item>
             </GroupItem>
             <GroupItem colCount={3}>
-              <Item dataField="customerSegment" editorType="dxSelectBox" editorOptions={{ items: customerSegments, value: customerData?.customerSegment }}>
+              <Item dataField="customerSegment" editorType="dxSelectBox" editorOptions={{ items: customerSegments }}>
                 <RequiredRule message="Müşteri segmenti zorunludur" />
               </Item>
-              <Item dataField="salesDesk" editorType="dxSelectBox" editorOptions={{ items: salesDesks, value: customerData?.salesDesk }}>
+              <Item dataField="salesDesk" editorType="dxSelectBox" editorOptions={{ items: salesDesks }}>
                 <RequiredRule message="Satış masası zorunludur" />
               </Item>
-              <Item dataField="customerStatus" editorType="dxSelectBox" editorOptions={{ items: customerStatuses, value: customerData?.customerStatus }}>
+              <Item dataField="customerStatus" editorType="dxSelectBox" editorOptions={{ items: customerStatuses }}>
                 <RequiredRule message="Müşteri durumu zorunludur" />
               </Item>
             </GroupItem>
@@ -170,6 +176,12 @@ class Product extends Component {
           >
             <FaUserPlus /> Yeni Müşteri
           </Button>
+          <Button
+            onClick={this.toggleCustomerListPopup}
+            className="button default"
+          >
+            <FaList /> Müşteri Listesi
+          </Button>
         </div>
         <Button
           onClick={this.handleBack}
@@ -185,6 +197,35 @@ class Product extends Component {
             dragEnabled={true}
             closeOnOutsideClick={true}
             title="Müşteri Listesi"
+            width={600}
+            height={400}
+          >
+            <DataGrid
+              dataSource={customers}
+              showBorders={true}
+              columnAutoWidth={true}
+              paging={{ pageSize: 10 }}
+              filterRow={{ visible: true }}
+              headerFilter={{ visible: true }}
+            >
+              <Column dataField="customerNumber" />
+              <Column dataField="name" />
+              <Column dataField="taxId" />
+              <Column dataField="registrationNo" />
+              <Column dataField="customerSegment" />
+              <Column dataField="salesDesk" />
+              <Column dataField="customerStatus" />
+              <Column dataField="channelPermissions" />
+            </DataGrid>
+          </Popup>
+        )}
+        {isCustomerListPopupVisible && (
+          <Popup
+            visible={isCustomerListPopupVisible}
+            onHiding={this.toggleCustomerListPopup}
+            dragEnabled={true}
+            closeOnOutsideClick={true}
+            title="Kaydedilen Müşteriler"
             width={600}
             height={400}
           >

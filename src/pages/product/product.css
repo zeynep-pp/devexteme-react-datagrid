@@ -1,14 +1,18 @@
 /* Genel tema sınıfları */
 .dark-theme {
-  --background: #333;
-  --text-color: #fff;
-  --input-bg: #444;
-  --input-border: #555;
-  --button-bg: #0056b3; /* Koyu mavi */
+  --background: #1e1e1e;
+  --text-color: #e0e0e0;
+  --input-bg: #2c2c2c;
+  --input-border: #444;
+  --button-bg: #007acc; /* Koyu mavi */
   --button-text: #fff;
-  --button-border: #004494; /* Daha koyu mavi */
+  --button-border: #005a9e; /* Daha koyu mavi */
   --grid-border: #444; /* Koyu temaya uygun grid kenar rengi */
-  --grid-hover-border: #0056b3; /* Koyu mavi hover sınırı */
+  --grid-hover-border: #007acc; /* Koyu mavi hover sınırı */
+  --label-color: #e0e0e0 /* Koyu modda etiket rengi beyaz */ !important;
+  --selectbox-bg: #333; /* Dark mode için selectbox arka plan rengi */
+  --selectbox-border: #555; /* Dark mode için selectbox sınır rengi */
+  --selectbox-hover-bg: #444; /* Dark mode için selectbox hover arka plan rengi */
 }
 
 .light-theme {
@@ -21,8 +25,13 @@
   --button-border: #0056b3; /* Koyu mavi */
   --grid-border: #ccc; /* Açık temaya uygun grid kenar rengi */
   --grid-hover-border: #007bff; /* Açık mavi hover sınırı */
+  --label-color: #000 !important; /* Açık modda etiket rengi siyah */
+  --selectbox-bg: #fff; /* Light mode için selectbox arka plan rengi */
+  --selectbox-border: #ccc; /* Light mode için selectbox sınır rengi */
+  --selectbox-hover-bg: #f1f1f1; /* Light mode için selectbox hover arka plan rengi */
 }
 
+/* Müşteri formu genel stilleri */
 .customer-form {
   background-color: var(--background);
   color: var(--text-color);
@@ -33,6 +42,7 @@
   border: 1px solid var(--input-border);
 }
 
+/* Tema değiştirme kapsayıcı stilleri */
 .theme-toggle-container {
   display: flex;
   justify-content: flex-end;
@@ -69,7 +79,7 @@
 }
 
 input:checked + .slider {
-  background-color: #0056b3; /* Koyu mavi */
+  background-color: var(--button-bg); /* Koyu mavi */
 }
 
 input:checked + .slider:before {
@@ -92,11 +102,13 @@ input:checked + .slider:before {
   right: 5px;
 }
 
+/* Başlık stilleri */
 h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
+/* Buton stilleri */
 .button {
   background-color: var(--button-bg);
   color: var(--button-text);
@@ -131,14 +143,20 @@ h2 {
   font-size: 16px; /* İkon büyüklüğünü ayarla */
 }
 
+/* Input stil */
 input[type="text"] {
   border: 1px solid var(--input-border);
   color: var(--text-color);
   background-color: var(--input-bg);
+  padding: 10px;
+  border-radius: 4px;
 }
 
+/* DataGrid için */
 .dx-datagrid {
   border: 1px solid var(--grid-border) !important;
+  background-color: var(--background) !important;
+  color: var(--text-color) !important;
 }
 
 .dx-datagrid .dx-data-row {
@@ -151,18 +169,129 @@ input[type="text"] {
 
 .dx-datagrid .dx-header-row {
   color: var(--text-color);
+  background-color: var(--background);
 }
 
 .dx-datagrid .dx-header-row .dx-datagrid-text-content {
   color: var(--text-color);
 }
 
-/* Form elemanları */
+/* Form etiketleri ve içerik */
 .dx-form .dx-item-label {
-  color: var(--text-color) !important;
+  color: var(--label-color) !important;
 }
 
+/* Checkbox ve Kanal İzinleri */
 .channel-permissions {
   display: flex;
   flex-direction: column;
 }
+
+.channel-permissions .dx-checkbox {
+  color: var(--text-color) !important;
+}
+
+.channel-permissions .dx-checkbox .dx-checkbox-icon {
+  color: var(--text-color) !important;
+  background-color: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+}
+
+/* Dark mode'daki diğer form alanları */
+.dark-theme .dx-texteditor {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .dx-texteditor-input {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+}
+
+.dark-theme .dx-selectbox {
+  color: var(--text-color) !important;
+  background-color: var(--selectbox-bg) !important;
+  border: 1px solid var(--selectbox-border) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-field {
+  background-color: var(--selectbox-bg) !important;
+  border-color: var(--selectbox-border) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-popup {
+  background-color: var(--selectbox-bg) !important;
+  border-color: var(--selectbox-border) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-item {
+  color: var(--text-color) !important;
+  background-color: var(--selectbox-bg) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-item:hover {
+  background-color: var(--selectbox-hover-bg) !important;
+}
+
+/* Light mode'daki SelectBox stilleri */
+.light-theme .dx-selectbox {
+  color: var(--text-color) !important;
+  background-color: var(--selectbox-bg) !important;
+  border: 1px solid var(--selectbox-border) !important;
+}
+
+.light-theme .dx-selectbox .dx-selectbox-field {
+  background-color: var(--selectbox-bg) !important;
+  border-color: var(--selectbox-border) !important;
+}
+
+.light-theme .dx-selectbox .dx-selectbox-popup {
+  background-color: var(--selectbox-bg) !important;
+  border-color: var(--selectbox-border) !important;
+}
+
+.light-theme .dx-selectbox .dx-selectbox-item {
+  color: var(--text-color) !important;
+  background-color: var(--selectbox-bg) !important;
+}
+
+.light-theme .dx-selectbox .dx-selectbox-item:hover {
+  background-color: var(--selectbox-hover-bg) !important;
+}
+
+/* Dark theme'deki SelectBox stilleri */
+.dark-theme .dx-selectbox {
+  color: var(--text-color) !important;
+  background-color: var(--selectbox-bg) !important;
+  border: 1px solid var(--selectbox-border) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-field {
+  background-color: var(--selectbox-bg) !important;
+  border-color: var(--selectbox-border) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-popup {
+  background-color: var(--selectbox-bg) !important;
+  border-color: var(--selectbox-border) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-item {
+  color: var(--text-color) !important;
+  background-color: var(--selectbox-bg) !important;
+}
+
+.dark-theme .dx-selectbox .dx-selectbox-item:hover {
+  background-color: var(--selectbox-hover-bg) !important;
+}
+
+/* Dark mode için label rengi */
+.dark-theme .dx-form .dx-item-label {
+  color: #00FF00 !important; /* Yeşil */
+}
+
+/* Light mode için label rengi */
+.light-theme .dx-form .dx-item-label {
+  color: #0000FF !important; /* Mavi */
+}
+
+
