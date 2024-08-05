@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { TextBox, SelectBox, CheckBox } from 'devextreme-react';
+import { TextBox, CheckBox } from 'devextreme-react';
 import { Button } from 'devextreme-react/button';
 import { Form, Item, GroupItem, RequiredRule } from 'devextreme-react/form';
 import { DataGrid, Column } from 'devextreme-react/data-grid';
@@ -19,7 +19,7 @@ class Product extends Component {
       isFormVisible: false,
       isPopupVisible: false,
       isDarkTheme: true,
-      isCustomerListPopupVisible: false, // Add state for the customer list popup
+      isCustomerListPopupVisible: false,
       permissions: [],
       selectedPermissions: []
     };
@@ -59,7 +59,8 @@ class Product extends Component {
           // Fetch selected permissions
           axios.get(`/api/customers/${customerNumber}/permissions`)
             .then(permissionsResponse => {
-              this.setState({ selectedPermissions: permissionsResponse.data });
+              const selectedPermissions = permissionsResponse.data;
+              this.setState({ selectedPermissions });
             })
             .catch(error => {
               console.error('Error fetching selected permissions:', error);
@@ -76,11 +77,24 @@ class Product extends Component {
   }
 
   handleSaveCustomer() {
-    const { customerData, isEditing } = this.state;
+    const { customerData, isEditing, selectedPermissions } = this.state;
+    const permissionsToSave = selectedPermissions.map(permission => ({
+      cptyId: customerData.customerNumber,
+      channelCode: permission.channelCode,
+      deleted: false
+    }));
+
     if (isEditing) {
       axios.put(`/api/customers/${customerData.customerNumber}`, customerData)
         .then(() => {
-          notify('Müşteri güncellendi.', 'success', 2000);
+          axios.put(`/api/customers/${customerData.customerNumber}/permissions`, permissionsToSave)
+            .then(() => {
+              notify('Müşteri ve izinler güncellendi.', 'success', 2000);
+            })
+            .catch(error => {
+              console.error('Error updating permissions:', error);
+              notify('İzinler güncellenirken bir hata oluştu.', 'error', 2000);
+            });
         })
         .catch(error => {
           console.error('Error updating customer:', error);
@@ -89,7 +103,14 @@ class Product extends Component {
     } else {
       axios.post('/api/customers', customerData)
         .then(() => {
-          notify('Yeni müşteri kaydedildi.', 'success', 2000);
+          axios.post('/api/customers/permissions', permissionsToSave)
+            .then(() => {
+              notify('Yeni müşteri ve izinler kaydedildi.', 'success', 2000);
+            })
+            .catch(error => {
+              console.error('Error saving permissions:', error);
+              notify('İzinler kaydedilirken bir hata oluştu.', 'error', 2000);
+            });
         })
         .catch(error => {
           console.error('Error saving customer:', error);
@@ -121,6 +142,12 @@ class Product extends Component {
   render() {
     const { customerNumber, customerData, isEditing, isFormVisible, isPopupVisible, isDarkTheme, isCustomerListPopupVisible, permissions, selectedPermissions } = this.state;
     const themeClass = isDarkTheme ? 'dark-theme' : 'light-theme';
+
+    // Determine which permissions are checked based on selectedPermissions
+    const permissionOptions = permissions.map(permission => ({
+      ...permission,
+      checked: selectedPermissions.some(sp => sp.channelCode === permission.code)
+    }));
 
     return (
       <div className={`customer-form ${themeClass}`}>
@@ -187,15 +214,15 @@ class Product extends Component {
               <Item dataField="channelPermissions">
                 <RequiredRule message="Kanal izinleri zorunludur" />
                 <div className="channel-permissions">
-                  {permissions.map(permission => (
+                  {permissionOptions.map(permission => (
                     <CheckBox
-                      key={permission}
-                      text={permission}
-                      value={selectedPermissions.includes(permission)}
+                      key={permission.code}
+                      text={permission.displayText}
+                      value={permission.checked}
                       onValueChanged={(e) => {
                         const updatedPermissions = e.value
-                          ? [...selectedPermissions, permission]
-                          : selectedPermissions.filter(p => p !== permission);
+                          ? [...selectedPermissions, { cptyId: customerData.customerNumber, channelCode: permission.code, deleted: false }]
+                          : selectedPermissions.filter(sp => sp.channelCode !== permission.code);
                         this.setState({ selectedPermissions: updatedPermissions });
                       }}
                     />
