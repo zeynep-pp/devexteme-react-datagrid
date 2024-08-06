@@ -21,7 +21,8 @@ class Product extends Component {
       isDarkTheme: true,
       isCustomerListPopupVisible: false,
       permissions: [],
-      selectedPermissions: []
+      selectedPermissions: [],
+      customers: [] // Added to hold the list of customers
     };
 
     this.handleCustomerNumberChange = this.handleCustomerNumberChange.bind(this);
@@ -32,16 +33,25 @@ class Product extends Component {
     this.togglePopup = this.togglePopup.bind(this);
     this.toggleTheme = this.toggleTheme.bind(this);
     this.toggleCustomerListPopup = this.toggleCustomerListPopup.bind(this);
+    this.handleCustomerSelection = this.handleCustomerSelection.bind(this);
   }
 
   componentDidMount() {
-    // Fetch permissions on component mount
+    // Fetch permissions and customers on component mount
     axios.get('/api/permissions')
       .then(response => {
         this.setState({ permissions: response.data });
       })
       .catch(error => {
         console.error('Error fetching permissions:', error);
+      });
+
+    axios.get('/api/customers')
+      .then(response => {
+        this.setState({ customers: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching customers:', error);
       });
   }
 
@@ -139,8 +149,15 @@ class Product extends Component {
     this.setState(prevState => ({ isCustomerListPopupVisible: !prevState.isCustomerListPopupVisible }));
   }
 
+  handleCustomerSelection(customerNumber) {
+    this.setState({ customerNumber }, () => {
+      this.handleSearchCustomer();
+      this.toggleCustomerListPopup(); // Close the popup after selection
+    });
+  }
+
   render() {
-    const { customerNumber, customerData, isEditing, isFormVisible, isPopupVisible, isDarkTheme, isCustomerListPopupVisible, permissions, selectedPermissions } = this.state;
+    const { customerNumber, customerData, isEditing, isFormVisible, isPopupVisible, isDarkTheme, isCustomerListPopupVisible, permissions, selectedPermissions, customers } = this.state;
     const themeClass = isDarkTheme ? 'dark-theme' : 'light-theme';
 
     // Determine which permissions are checked based on selectedPermissions
@@ -166,7 +183,7 @@ class Product extends Component {
             value={customerNumber}
             onValueChanged={this.handleCustomerNumberChange}
             placeholder="Müşteri Numarası"
-            width="calc(100% - 130px)"
+            width="calc(100% - 360px)"
             style={{ color: 'var(--text-color)', backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', borderRadius: '4px', padding: '10px', boxSizing: 'border-box' }}
           />
           <Button
@@ -175,6 +192,20 @@ class Product extends Component {
             style={{ width: '120px', marginLeft: '10px' }}
           >
             <FaSearch /> Ara
+          </Button>
+          <Button
+            onClick={this.toggleCustomerListPopup}
+            className="button default"
+            style={{ width: '120px', marginLeft: '10px' }}
+          >
+            <FaList /> Müşteri Listesi
+          </Button>
+          <Button
+            onClick={this.handleNewCustomer}
+            className="button default"
+            style={{ width: '120px', marginLeft: '10px' }}
+          >
+            <FaUserPlus /> Yeni Müşteri
           </Button>
         </div>
         {isFormVisible && (
@@ -305,6 +336,7 @@ class Product extends Component {
               paging={{ pageSize: 10 }}
               filterRow={{ visible: true }}
               headerFilter={{ visible: true }}
+              onRowClick={(e) => this.handleCustomerSelection(e.data.customerNumber)} // Handle row click
             >
               <Column dataField="customerNumber" />
               <Column dataField="name" />
