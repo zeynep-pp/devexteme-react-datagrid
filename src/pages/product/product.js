@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { TextBox, SelectBox, CheckBox } from 'devextreme-react';
 import { Button } from 'devextreme-react/button';
@@ -6,7 +5,7 @@ import { Form, Item, GroupItem, RequiredRule } from 'devextreme-react/form';
 import { DataGrid, Column } from 'devextreme-react/data-grid';
 import { Popup } from 'devextreme-react/popup';
 import notify from 'devextreme/ui/notify';
-import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch, FaList } from 'react-icons/fa';
+import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch, FaList, FaArrowCircleRight } from 'react-icons/fa';
 import './product.css'; // CSS dosyasını import et
 
 const customers = [
@@ -39,6 +38,7 @@ class Product extends Component {
     this.togglePopup = this.togglePopup.bind(this);
     this.toggleTheme = this.toggleTheme.bind(this);
     this.toggleCustomerListPopup = this.toggleCustomerListPopup.bind(this);
+    this.handleCustomerSelection = this.handleCustomerSelection.bind(this);
   }
 
   handleCustomerNumberChange(e) {
@@ -85,6 +85,29 @@ class Product extends Component {
   toggleCustomerListPopup() {
     this.setState(prevState => ({ isCustomerListPopupVisible: !prevState.isCustomerListPopupVisible }));
   }
+
+  handleCustomerSelection(customerNumber) {
+    const customer = customers.find(c => c.customerNumber === customerNumber);
+    if (customer) {
+      this.setState({ customerData: customer, isEditing: true, isFormVisible: true });
+      notify(`Müşteri ${customer.name} seçildi.`, 'success', 2000);
+    } else {
+      notify('Müşteri bulunamadı.', 'error', 2000);
+    }
+  }
+
+  renderButtonCell = (cellInfo) => {
+    return (
+      <div className="button-cell">
+        <button
+          onClick={() => this.handleCustomerSelection(cellInfo.row.data.customerNumber)}
+          className="get-button"
+        >
+          <FaArrowCircleRight />
+        </button>
+      </div>
+    );
+  };
 
   render() {
     const { customerNumber, customerData, isEditing, isFormVisible, isPopupVisible, isDarkTheme, isCustomerListPopupVisible } = this.state;
@@ -237,6 +260,11 @@ class Product extends Component {
               filterRow={{ visible: true }}
               headerFilter={{ visible: true }}
             >
+              <Column
+                width={100}
+                cellRender={this.renderButtonCell}
+                caption="Seçim"
+              />
               <Column dataField="customerNumber" />
               <Column dataField="name" />
               <Column dataField="taxId" />
