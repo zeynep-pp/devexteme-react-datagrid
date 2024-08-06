@@ -295,14 +295,28 @@ input[type="text"] {
 }
 
 /* DataGrid Buton Stilleri */
+
+/* İkon buton için stil */
 .get-button {
-  color: blue;
-  transition: transform 0.3s;
+  background: transparent; /* Şeffaf arka plan */
+  border: none; /* Sınır yok */
+  cursor: pointer; /* İmleç işareti */
+  font-size: 24px; /* İkon boyutu */
+  color: #007bff; /* İkon rengi */
+  transition: transform 0.2s ease, color 0.2s ease; /* Animasyon efekti */
 }
 
-.get-button:hover {
-  transform: scale(1.1);
+/* İkon tıklandığında animasyon efekti */
+.get-button:active {
+  transform: scale(0.9); /* Küçültme efekti */
+  color: #0056b3; /* Renk değişimi */
 }
+
+/* İkon hover efekti (isteğe bağlı) */
+.get-button:hover {
+  color: #0056b3; /* Renk değişimi */
+}
+
 
 .export-button {
   color: green;
