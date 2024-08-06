@@ -21,5 +21,10 @@ export const navigation = [
         path: '/product'
       }
     ]
-  }
+  },
+  {
+    text: 'Settings',
+    path: '/settings',
+    icon: 'settings'
+  },
   ];
