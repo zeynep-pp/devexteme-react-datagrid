@@ -294,4 +294,16 @@ input[type="text"] {
   color: #0000FF !important; /* Mavi */
 }
 
+/* DataGrid Buton Stilleri */
+.get-button {
+  color: blue;
+  transition: transform 0.3s;
+}
 
+.get-button:hover {
+  transform: scale(1.1);
+}
+
+.export-button {
+  color: green;
+}

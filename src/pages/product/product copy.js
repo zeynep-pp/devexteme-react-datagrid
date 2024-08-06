@@ -3,10 +3,10 @@ import axios from 'axios';
 import { TextBox, CheckBox } from 'devextreme-react';
 import { Button } from 'devextreme-react/button';
 import { Form, Item, GroupItem, RequiredRule } from 'devextreme-react/form';
-import { DataGrid, Column } from 'devextreme-react/data-grid';
+import { DataGrid, Column, ColumnChooser, Export } from 'devextreme-react/data-grid';
 import { Popup } from 'devextreme-react/popup';
 import notify from 'devextreme/ui/notify';
-import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch, FaList } from 'react-icons/fa';
+import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch, FaList, FaArrowCircleRight, FaFileExcel } from 'react-icons/fa';
 import './product.css'; // CSS dosyasını import et
 
 class Product extends Component {
@@ -22,7 +22,8 @@ class Product extends Component {
       isCustomerListPopupVisible: false,
       permissions: [],
       selectedPermissions: [],
-      customers: [] // Added to hold the list of customers
+      customers: [], // Added to hold the list of customers
+      selectedRowKey: null // Added to manage the selected row
     };
 
     this.handleCustomerNumberChange = this.handleCustomerNumberChange.bind(this);
@@ -34,6 +35,7 @@ class Product extends Component {
     this.toggleTheme = this.toggleTheme.bind(this);
     this.toggleCustomerListPopup = this.toggleCustomerListPopup.bind(this);
     this.handleCustomerSelection = this.handleCustomerSelection.bind(this);
+    this.handleExcelExport = this.handleExcelExport.bind(this);
   }
 
   componentDidMount() {
@@ -154,6 +156,10 @@ class Product extends Component {
       this.handleSearchCustomer();
       this.toggleCustomerListPopup(); // Close the popup after selection
     });
+  }
+
+  handleExcelExport() {
+    this.grid.instance.exportToExcel(false);
   }
 
   render() {
@@ -307,7 +313,21 @@ class Product extends Component {
               paging={{ pageSize: 10 }}
               filterRow={{ visible: true }}
               headerFilter={{ visible: true }}
+              ref={(ref) => { this.grid = ref; }} // Store reference to the DataGrid instance
             >
+              <Column
+                type="buttons"
+                width={100}
+                buttons={[{
+                  icon: <FaArrowCircleRight />,
+                  hint: 'Getir',
+                  onClick: (e) => {
+                    const { customerNumber } = e.row.data;
+                    this.handleCustomerSelection(customerNumber);
+                  },
+                  cssClass: 'get-button',
+                }]}
+              />
               <Column dataField="customerNumber" />
               <Column dataField="name" />
               <Column dataField="taxId" />
@@ -316,6 +336,16 @@ class Product extends Component {
               <Column dataField="salesDesk" />
               <Column dataField="customerStatus" />
               <Column dataField="channelPermissions" />
+              <Column
+                type="buttons"
+                width={100}
+                buttons={[{
+                  icon: <FaFileExcel />,
+                  hint: 'Excel’e Aktar',
+                  onClick: this.handleExcelExport,
+                  cssClass: 'export-button',
+                }]}
+              />
             </DataGrid>
           </Popup>
         )}
@@ -336,8 +366,22 @@ class Product extends Component {
               paging={{ pageSize: 10 }}
               filterRow={{ visible: true }}
               headerFilter={{ visible: true }}
+              ref={(ref) => { this.grid = ref; }} // Store reference to the DataGrid instance
               onRowClick={(e) => this.handleCustomerSelection(e.data.customerNumber)} // Handle row click
             >
+              <Column
+                type="buttons"
+                width={100}
+                buttons={[{
+                  icon: <FaArrowCircleRight />,
+                  hint: 'Getir',
+                  onClick: (e) => {
+                    const { customerNumber } = e.row.data;
+                    this.handleCustomerSelection(customerNumber);
+                  },
+                  cssClass: 'get-button',
+                }]}
+              />
               <Column dataField="customerNumber" />
               <Column dataField="name" />
               <Column dataField="taxId" />
@@ -346,6 +390,16 @@ class Product extends Component {
               <Column dataField="salesDesk" />
               <Column dataField="customerStatus" />
               <Column dataField="channelPermissions" />
+              <Column
+                type="buttons"
+                width={100}
+                buttons={[{
+                  icon: <FaFileExcel />,
+                  hint: 'Excel’e Aktar',
+                  onClick: this.handleExcelExport,
+                  cssClass: 'export-button',
+                }]}
+              />
             </DataGrid>
           </Popup>
         )}
