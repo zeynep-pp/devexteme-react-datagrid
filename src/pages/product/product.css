@@ -1,323 +1,79 @@
-/* Genel tema sınıfları */
-.dark-theme {
-  --background: #1e1e1e;
-  --text-color: #e0e0e0;
-  --input-bg: #2c2c2c;
-  --input-border: #444;
-  --button-bg: #007acc; /* Koyu mavi */
-  --button-text: #fff;
-  --button-border: #005a9e; /* Daha koyu mavi */
-  --grid-border: #444; /* Koyu temaya uygun grid kenar rengi */
-  --grid-hover-border: #007acc; /* Koyu mavi hover sınırı */
-  --label-color: #e0e0e0 /* Koyu modda etiket rengi beyaz */ !important;
-  --selectbox-bg: #333; /* Dark mode için selectbox arka plan rengi */
-  --selectbox-border: #555; /* Dark mode için selectbox sınır rengi */
-  --selectbox-hover-bg: #444; /* Dark mode için selectbox hover arka plan rengi */
-}
-
-.light-theme {
-  --background: #f9f9f9;
-  --text-color: #000;
-  --input-bg: #fff;
-  --input-border: #ccc;
-  --button-bg: #007bff; /* Açık mavi */
-  --button-text: #fff;
-  --button-border: #0056b3; /* Koyu mavi */
-  --grid-border: #ccc; /* Açık temaya uygun grid kenar rengi */
-  --grid-hover-border: #007bff; /* Açık mavi hover sınırı */
-  --label-color: #000 !important; /* Açık modda etiket rengi siyah */
-  --selectbox-bg: #fff; /* Light mode için selectbox arka plan rengi */
-  --selectbox-border: #ccc; /* Light mode için selectbox sınır rengi */
-  --selectbox-hover-bg: #f1f1f1; /* Light mode için selectbox hover arka plan rengi */
-}
-
-/* Müşteri formu genel stilleri */
-.customer-form {
-  background-color: var(--background);
-  color: var(--text-color);
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 600px;
-  margin: 0 auto;
-  border: 1px solid var(--input-border);
-}
-
-/* Tema değiştirme kapsayıcı stilleri */
-.theme-toggle-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.theme-toggle input {
-  display: none;
-}
-
-.slider {
-  position: relative;
-  width: 50px;
-  height: 20px;
-  background-color: #ccc;
-  border-radius: 20px;
-  transition: background-color 0.3s;
-}
-
-.slider:before {
-  content: "";
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #fff;
-  transition: transform 0.3s;
-}
-
-input:checked + .slider {
-  background-color: var(--button-bg); /* Koyu mavi */
-}
-
-input:checked + .slider:before {
-  transform: translateX(30px);
-}
-
-.slider-icon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: var(--text-color);
-}
-
-.sun {
-  left: 5px;
-}
-
-.moon {
-  right: 5px;
-}
-
-/* Başlık stilleri */
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-/* Buton stilleri */
-.button {
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border: 1px solid var(--button-border);
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
-  box-sizing: border-box;
-}
-
-.button.success {
-  background-color: var(--button-bg);
-}
-
-.button.default {
-  background-color: var(--button-bg);
-}
-
-.button .dx-button-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.button svg {
-  margin-right: 5px;
-  font-size: 16px; /* İkon büyüklüğünü ayarla */
-}
-
-/* Input stil */
-input[type="text"] {
-  border: 1px solid var(--input-border);
-  color: var(--text-color);
-  background-color: var(--input-bg);
-  padding: 10px;
-  border-radius: 4px;
-}
-
-/* DataGrid için */
-.dx-datagrid {
-  border: 1px solid var(--grid-border) !important;
-  background-color: var(--background) !important;
-  color: var(--text-color) !important;
-}
-
-.dx-datagrid .dx-data-row {
-  border: 1px solid var(--grid-border) !important;
-}
-
-.dx-datagrid .dx-data-row:hover {
-  border: 1px solid var(--grid-hover-border) !important;
-}
-
-.dx-datagrid .dx-header-row {
-  color: var(--text-color);
-  background-color: var(--background);
-}
-
-.dx-datagrid .dx-header-row .dx-datagrid-text-content {
-  color: var(--text-color);
-}
-
-/* Form etiketleri ve içerik */
-.dx-form .dx-item-label {
-  color: var(--label-color) !important;
-}
-
-/* Checkbox ve Kanal İzinleri */
-.channel-permissions {
+.product-container {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-.channel-permissions .dx-checkbox {
-  color: var(--text-color) !important;
+.data-grid-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-.channel-permissions .dx-checkbox .dx-checkbox-icon {
-  color: var(--text-color) !important;
-  background-color: var(--input-bg) !important;
-  border: 1px solid var(--input-border) !important;
+.grid-and-details {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* Dark mode'daki diğer form alanları */
-.dark-theme .dx-texteditor {
-  color: var(--text-color) !important;
+.data-grid-wrapper {
+  flex: 2;
+  overflow: hidden;
 }
 
-.dark-theme .dx-texteditor-input {
-  background-color: var(--input-bg) !important;
-  border-color: var(--input-border) !important;
+.details-table-wrapper {
+  flex: 1;
+  padding-left: 20px;
+  overflow: hidden;
 }
 
-.dark-theme .dx-selectbox {
-  color: var(--text-color) !important;
-  background-color: var(--selectbox-bg) !important;
-  border: 1px solid var(--selectbox-border) !important;
+.details-table-container {
+  height: 100%;
 }
 
-.dark-theme .dx-selectbox .dx-selectbox-field {
-  background-color: var(--selectbox-bg) !important;
-  border-color: var(--selectbox-border) !important;
+.add-detail-button {
+  margin-bottom: 10px;
 }
 
-.dark-theme .dx-selectbox .dx-selectbox-popup {
-  background-color: var(--selectbox-bg) !important;
-  border-color: var(--selectbox-border) !important;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.dark-theme .dx-selectbox .dx-selectbox-item {
-  color: var(--text-color) !important;
-  background-color: var(--selectbox-bg) !important;
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
 }
 
-.dark-theme .dx-selectbox .dx-selectbox-item:hover {
-  background-color: var(--selectbox-hover-bg) !important;
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
-/* Light mode'daki SelectBox stilleri */
-.light-theme .dx-selectbox {
-  color: var(--text-color) !important;
-  background-color: var(--selectbox-bg) !important;
-  border: 1px solid var(--selectbox-border) !important;
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.light-theme .dx-selectbox .dx-selectbox-field {
-  background-color: var(--selectbox-bg) !important;
-  border-color: var(--selectbox-border) !important;
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
 }
 
-.light-theme .dx-selectbox .dx-selectbox-popup {
-  background-color: var(--selectbox-bg) !important;
-  border-color: var(--selectbox-border) !important;
-}
-
-.light-theme .dx-selectbox .dx-selectbox-item {
-  color: var(--text-color) !important;
-  background-color: var(--selectbox-bg) !important;
-}
-
-.light-theme .dx-selectbox .dx-selectbox-item:hover {
-  background-color: var(--selectbox-hover-bg) !important;
-}
-
-/* Dark theme'deki SelectBox stilleri */
-.dark-theme .dx-selectbox {
-  color: var(--text-color) !important;
-  background-color: var(--selectbox-bg) !important;
-  border: 1px solid var(--selectbox-border) !important;
-}
-
-.dark-theme .dx-selectbox .dx-selectbox-field {
-  background-color: var(--selectbox-bg) !important;
-  border-color: var(--selectbox-border) !important;
-}
-
-.dark-theme .dx-selectbox .dx-selectbox-popup {
-  background-color: var(--selectbox-bg) !important;
-  border-color: var(--selectbox-border) !important;
-}
-
-.dark-theme .dx-selectbox .dx-selectbox-item {
-  color: var(--text-color) !important;
-  background-color: var(--selectbox-bg) !important;
-}
-
-.dark-theme .dx-selectbox .dx-selectbox-item:hover {
-  background-color: var(--selectbox-hover-bg) !important;
-}
-
-/* Dark mode için label rengi */
-.dark-theme .dx-form .dx-item-label {
-  color: #00FF00 !important; /* Yeşil */
-}
-
-/* Light mode için label rengi */
-.light-theme .dx-form .dx-item-label {
-  color: #0000FF !important; /* Mavi */
-}
-
-/* DataGrid Buton Stilleri */
-
-/* İkon buton için stil */
-.get-button {
-  background: transparent; /* Şeffaf arka plan */
-  border: none; /* Sınır yok */
-  cursor: pointer; /* İmleç işareti */
-  font-size: 24px; /* İkon boyutu */
-  color: #007bff; /* İkon rengi */
-  transition: transform 0.2s ease, color 0.2s ease; /* Animasyon efekti */
-}
-
-/* İkon tıklandığında animasyon efekti */
-.get-button:active {
-  transform: scale(0.9); /* Küçültme efekti */
-  color: #0056b3; /* Renk değişimi */
-}
-
-/* İkon hover efekti (isteğe bağlı) */
-.get-button:hover {
-  color: #0056b3; /* Renk değişimi */
-}
-
-
-.export-button {
-  color: green;
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DataGrid, { Column, Editing, Paging } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Paging, Button } from 'devextreme-react/data-grid';
 import SelectBox from 'devextreme-react/select-box';
 import TextBox from 'devextreme-react/text-box';
 import Toast from 'devextreme-react/toast';
@@ -8,8 +8,8 @@ import './product.css'; // CSS dosyasını import et
 
 // Fiyat bucket seçenekleri
 const priceBucketsOptions = [
-  { id: 1, code: 'Bucket_1', displayText: 'Bucket 1', segment: 'Segment 1', salesDesk: 'Sales Desk 1' },
-  { id: 2, code: 'Bucket_2', displayText: 'Bucket 2', segment: 'Segment 2', salesDesk: 'Sales Desk 2' },
+  { id: 1, code: 'Bucket_1', displayText: 'Bucket 1' },
+  { id: 2, code: 'Bucket_2', displayText: 'Bucket 2' },
 ];
 
 // Müşteri verileri
@@ -35,13 +35,10 @@ class Product extends Component {
       selectedPriceBucketId: null,
       selectedCustomerId: null,
       customerIdSearch: '',
-      customerName: '', // Display selected customer name
       toastMessage: '',
       showToast: false,
       toastType: '', // 'success' or 'error'
       showDetailsFor: null, // Track which row's details to show
-      showConfirmModal: false, // Track confirm modal visibility for details addition
-      itemToAdd: null, // Item to be added after confirmation
     };
   }
 
@@ -57,9 +54,6 @@ class Product extends Component {
         return counterparty;
       });
       return { counterparties: updatedCounterparties };
-    }, () => {
-      // Automatically show details after adding an item
-      this.setState({ showDetailsFor: counterpartyId });
     });
   };
 
@@ -85,34 +79,32 @@ class Product extends Component {
     if (selectedCptyType === 'PriceBucket') {
       const bucket = this.state.priceBucketsOptions.find(b => b.id === selectedPriceBucketId);
       if (bucket) {
-        this.setState({
-          showConfirmModal: true,
-          itemToAdd: {
-            id: Date.now(),
-            cptyType: 'PriceBucket',
-            name: bucket.code,
-            segment: bucket.segment,
-            salesDesk: bucket.salesDesk,
-            sourceId: bucket.id,
-          }
+        this.handleAddItem(selectedCounterparty.id, {
+          id: Date.now(),
+          cptyType: 'PriceBucket',
+          name: bucket.code,
+          segment: bucket.segment,
+          salesDesk: bucket.salesDesk,
+          sourceId: bucket.id,
         });
+        this.showToast('Price Bucket added successfully!', 'success');
       }
     } else if (selectedCptyType === 'Customer') {
       const customer = this.state.customers.find(c => c.id === selectedCustomerId);
       if (customer) {
-        this.setState({
-          showConfirmModal: true,
-          itemToAdd: {
-            id: Date.now(),
-            cptyType: 'Customer',
-            name: customer.name,
-            segment: customer.segment,
-            salesDesk: customer.salesDesk,
-            sourceId: customer.id,
-          }
+        this.handleAddItem(selectedCounterparty.id, {
+          id: Date.now(),
+          cptyType: 'Customer',
+          name: customer.name,
+          segment: customer.segment,
+          salesDesk: customer.salesDesk,
+          sourceId: customer.id,
         });
+        this.showToast('Customer added successfully!', 'success');
       }
     }
+
+    this.setState({ showModal: false }); // Close modal after adding details
   };
 
   openModal = (counterparty) => {
@@ -130,7 +122,6 @@ class Product extends Component {
       selectedPriceBucketId: null,
       selectedCustomerId: null,
       customerIdSearch: '',
-      customerName: '',
     });
   };
 
@@ -151,35 +142,20 @@ class Product extends Component {
       if (customer) {
         this.setState({
           selectedCustomerId: customer.id,
-          customerName: customer.name
+          selectedCounterparty: {
+            ...this.state.selectedCounterparty,
+            segment: customer.segment,
+            salesDesk: customer.salesDesk
+          }
         });
         this.showToast(`Customer found: ${customer.name}`, 'success');
       } else {
-        this.setState({
-          selectedCustomerId: null,
-          customerName: ''
-        });
         this.showToast("Customer not found.", 'error');
+        this.setState({ selectedCustomerId: null });
       }
     } else {
-      this.setState({
-        selectedCustomerId: null,
-        customerName: ''
-      });
+      this.setState({ selectedCustomerId: null });
     }
-  };
-
-  confirmAddItem = () => {
-    const { selectedCounterparty, itemToAdd } = this.state;
-    if (selectedCounterparty && itemToAdd) {
-      this.handleAddItem(selectedCounterparty.id, itemToAdd);
-      this.setState({ showConfirmModal: false });
-      this.showToast('Item added successfully!', 'success');
-    }
-  };
-
-  cancelAddItem = () => {
-    this.setState({ showConfirmModal: false });
   };
 
   showToast = (message, type) => {
@@ -213,7 +189,7 @@ class Product extends Component {
   );
 
   render() {
-    const { selectedCounterparty, showModal, toastMessage, showToast, toastType, showDetailsFor, showConfirmModal, customerName } = this.state;
+    const { selectedCounterparty, showModal, toastMessage, showToast, toastType, showDetailsFor } = this.state;
 
     return (
       <div className="product-container">
@@ -235,6 +211,9 @@ class Product extends Component {
                   <button onClick={() => this.setState({ showDetailsFor: data.id })}>
                     Show Details
                   </button>
+                  <button onClick={() => this.openModal(data)}>
+                    Add
+                  </button>
                 </div>
               )}
             />
@@ -249,12 +228,7 @@ class Product extends Component {
                 <button className="hide-details-button" onClick={() => this.setState({ showDetailsFor: null })}>
                   Hide Details
                 </button>
-                <div className="details-table-container">
-                  {this.renderDetailsTable(counterparty.items || [])}
-                  <button className="add-item-button" onClick={() => this.openModal(counterparty)}>
-                    Add Item
-                  </button>
-                </div>
+                {this.renderDetailsTable(counterparty.items || [])}
               </div>
             )
           ))}
@@ -295,31 +269,14 @@ class Product extends Component {
                       value={this.state.customerIdSearch}
                       onValueChanged={this.handleCustomerSearch}
                     />
-                    {customerName && (
-                      <div className="customer-name-display">
-                        <strong>Customer Name:</strong> {customerName}
-                      </div>
-                    )}
                   </div>
                 )}
                 <button className="add-button" onClick={this.handleAddDetails}>Add</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Confirm Modal for Adding Item */}
-        {showConfirmModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>Confirm</h3>
-                <button className="close-modal" onClick={this.cancelAddItem}>✖</button>
-              </div>
-              <div className="modal-body">
-                <p>Are you sure you want to add this item?</p>
-                <button className="confirm-button" onClick={this.confirmAddItem}>Yes</button>
-                <button className="cancel-button" onClick={this.cancelAddItem}>No</button>
+                {this.state.selectedCustomerId && 
+                  <div className="customer-name">
+                    <strong>Customer:</strong> {this.state.customers.find(c => c.id === this.state.selectedCustomerId)?.name}
+                  </div>
+                }
               </div>
             </div>
           </div>
