@@ -1,196 +1,155 @@
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import DataGrid, { Column, Editing, Paging } from 'devextreme-react/data-grid';
+import DropDownBox from 'devextreme-react/drop-down-box';
 import SelectBox from 'devextreme-react/select-box';
-import TextBox from 'devextreme-react/text-box';
 import Toast from 'devextreme-react/toast';
 import 'devextreme/dist/css/dx.light.css';
-import './product.css'; // CSS dosyasını import et
+import './product.css';
 
-// Fiyat bucket seçenekleri
 const priceBucketsOptions = [
-  { id: 1, code: 'Bucket_1', displayText: 'Bucket 1', segment: 'Segment 1', salesDesk: 'Sales Desk 1' },
-  { id: 2, code: 'Bucket_2', displayText: 'Bucket 2', segment: 'Segment 2', salesDesk: 'Sales Desk 2' },
+  { id: 1, displayText: 'Bucket 1', segment: 'Segment 1', salesDesk: 'Sales Desk 1' },
+  { id: 2, displayText: 'Bucket 2', segment: 'Segment 2', salesDesk: 'Sales Desk 2' },
 ];
 
-// Müşteri verileri
-const customers = [
+const allCustomers = [
   { id: 1, name: 'Customer 1', segment: 'Segment 1', salesDesk: 'Sales Desk 1' },
   { id: 2, name: 'Customer 2', segment: 'Segment 2', salesDesk: 'Sales Desk 2' },
+  { id: 3, name: 'Customer 3', segment: 'Segment 3', salesDesk: 'Sales Desk 3' },
+  // Diğer müşteriler...
 ];
 
-class Product extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      counterparties: [
-        { id: 1, name: 'Counterparty 1', code: 'Code_1', description: 'Description 1', items: [] },
-        { id: 2, name: 'Counterparty 2', code: 'Code_2', description: 'Description 2', items: [] },
-        { id: 3, name: 'Counterparty 3', code: 'Code_3', description: 'Description 3', items: [] }
-      ],
-      priceBucketsOptions,
-      customers,
-      selectedCounterparty: null,
-      showModal: false,
-      selectedCptyType: 'PriceBucket', // Default to PriceBucket
-      selectedPriceBucketId: null,
-      selectedCustomerId: null,
-      customerIdSearch: '',
-      customerName: '', // Display selected customer name
-      toastMessage: '',
-      showToast: false,
-      toastType: '', // 'success' or 'error'
-      showDetailsFor: null, // Track which row's details to show
-      showConfirmModal: false, // Track confirm modal visibility for details addition
-      itemToAdd: null, // Item to be added after confirmation
-    };
-  }
+const options = [
+  { value: 'customer', text: 'Customer' },
+  { value: 'priceBucket', text: 'Price Bucket' },
+];
 
-  handleAddItem = (counterpartyId, item) => {
-    this.setState(prevState => {
-      const updatedCounterparties = prevState.counterparties.map(counterparty => {
-        if (counterparty.id === counterpartyId) {
-          return {
-            ...counterparty,
-            items: [...(counterparty.items || []), item],
-          };
-        }
-        return counterparty;
-      });
-      return { counterparties: updatedCounterparties };
-    }, () => {
-      // Automatically show details after adding an item
-      this.setState({ showDetailsFor: counterpartyId });
-    });
+function Product() {
+  const [counterparties, setCounterparties] = useState([
+    { id: 1, name: 'Counterparty 1', code: 'Code_1', description: 'Description 1', items: [] },
+    { id: 2, name: 'Counterparty 2', code: 'Code_2', description: 'Description 2', items: [] },
+    { id: 3, name: 'Counterparty 3', code: 'Code_3', description: 'Description 3', items: [] }
+  ]);
+  const [selectedCounterparty, setSelectedCounterparty] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCptyType, setSelectedCptyType] = useState('priceBucket');
+  const [selectedPriceBuckets, setSelectedPriceBuckets] = useState([]);
+  const [selectedTempCustomers, setSelectedTempCustomers] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [itemsToAdd, setItemsToAdd] = useState([]);
+  const [toastMessage, setToastMessage] = useState('');
+  const [isToastVisible, setIsToastVisible] = useState(false);
+  const [toastType, setToastType] = useState('');
+  const [showDetailsFor, setShowDetailsFor] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+  const [temporaryCustomerList, setTemporaryCustomerList] = useState([]);
+
+  const gridRef = useRef(null);
+
+  // Arama fonksiyonu
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+
+    if (value) {
+      const results = allCustomers.filter(customer =>
+        customer.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setTemporaryCustomerList(results);
+    } else {
+      setTemporaryCustomerList([]);
+    }
   };
 
-  handleDeleteItem = (counterpartyId, itemId) => {
-    this.setState(prevState => {
-      const updatedCounterparties = prevState.counterparties.map(counterparty => {
-        if (counterparty.id === counterpartyId) {
-          return {
-            ...counterparty,
-            items: (counterparty.items || []).filter(item => item.id !== itemId),
-          };
-        }
-        return counterparty;
-      });
-      return { counterparties: updatedCounterparties };
-    });
+  const handleAddItem = (counterpartyId, item) => {
+    setCounterparties(prevState =>
+      prevState.map(counterparty =>
+        counterparty.id === counterpartyId
+          ? { ...counterparty, items: [...counterparty.items, item] }
+          : counterparty
+      )
+    );
   };
 
-  handleAddDetails = () => {
-    const { selectedCounterparty, selectedCptyType, selectedPriceBucketId, selectedCustomerId } = this.state;
+  const handleDeleteItem = (counterpartyId, itemId) => {
+    setCounterparties(prevState =>
+      prevState.map(counterparty =>
+        counterparty.id === counterpartyId
+          ? { ...counterparty, items: counterparty.items.filter(item => item.id !== itemId) }
+          : counterparty
+      )
+    );
+  };
+
+  const handleAddDetails = () => {
     if (!selectedCounterparty) return;
 
-    if (selectedCptyType === 'PriceBucket') {
-      const bucket = this.state.priceBucketsOptions.find(b => b.id === selectedPriceBucketId);
-      if (bucket) {
-        this.setState({
-          showConfirmModal: true,
-          itemToAdd: {
-            id: Date.now(),
-            cptyType: 'PriceBucket',
-            name: bucket.code,
-            segment: bucket.segment,
-            salesDesk: bucket.salesDesk,
-            sourceId: bucket.id,
-          }
-        });
-      }
-    } else if (selectedCptyType === 'Customer') {
-      const customer = this.state.customers.find(c => c.id === selectedCustomerId);
-      if (customer) {
-        this.setState({
-          showConfirmModal: true,
-          itemToAdd: {
-            id: Date.now(),
-            cptyType: 'Customer',
-            name: customer.name,
-            segment: customer.segment,
-            salesDesk: customer.salesDesk,
-            sourceId: customer.id,
-          }
-        });
-      }
+    const items = selectedCptyType === 'priceBucket'
+      ? selectedPriceBuckets.map(bucket => ({
+          id: Date.now(),
+          cptyType: 'PriceBucket',
+          name: bucket.displayText,
+          segment: bucket.segment,
+          salesDesk: bucket.salesDesk,
+          sourceId: bucket.id,
+        }))
+      : selectedTempCustomers.map(customer => ({
+          id: Date.now(),
+          cptyType: 'Customer',
+          name: customer.name,
+          segment: customer.segment,
+          salesDesk: customer.salesDesk,
+          sourceId: customer.id,
+        }));
+
+    setItemsToAdd(items);
+    setShowConfirmModal(true);
+  };
+
+  const openModal = (counterparty) => {
+    setSelectedCounterparty(counterparty);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedCounterparty(null);
+    setSelectedCptyType('priceBucket');
+    setSelectedPriceBuckets([]);
+    setSelectedTempCustomers([]);
+    setSearchValue('');
+    setTemporaryCustomerList([]);
+  };
+
+  const handleCptyTypeChange = (e) => {
+    setSelectedCptyType(e.value);
+    setSearchValue('');
+    setTemporaryCustomerList([]);
+    setSelectedTempCustomers([]);
+  };
+
+  const handleCustomerSelection = (e) => {
+    setSelectedTempCustomers(e.selectedRowsData);
+  };
+
+  const confirmAddItem = () => {
+    if (selectedCounterparty && itemsToAdd.length > 0) {
+      itemsToAdd.forEach(item => handleAddItem(selectedCounterparty.id, item));
+      setShowConfirmModal(false);
+      showToast('Items added successfully!', 'success');
     }
   };
 
-  openModal = (counterparty) => {
-    this.setState({
-      selectedCounterparty: counterparty,
-      showModal: true
-    });
+  const cancelAddItem = () => {
+    setShowConfirmModal(false);
   };
 
-  closeModal = () => {
-    this.setState({
-      showModal: false,
-      selectedCounterparty: null,
-      selectedCptyType: 'PriceBucket', // Reset to default
-      selectedPriceBucketId: null,
-      selectedCustomerId: null,
-      customerIdSearch: '',
-      customerName: '',
-    });
+  const showToast = (message, type) => {
+    setToastMessage(message);
+    setToastType(type);
+    setIsToastVisible(true);
   };
 
-  handleCptyTypeChange = (e) => {
-    this.setState({ selectedCptyType: e.value });
-  };
-
-  handlePriceBucketSelect = (e) => {
-    this.setState({ selectedPriceBucketId: e.value });
-  };
-
-  handleCustomerSearch = (e) => {
-    const customerId = parseInt(e.value, 10);
-    this.setState({ customerIdSearch: e.value });
-
-    if (Number.isInteger(customerId)) {
-      const customer = this.state.customers.find(c => c.id === customerId);
-      if (customer) {
-        this.setState({
-          selectedCustomerId: customer.id,
-          customerName: customer.name
-        });
-        this.showToast(`Customer found: ${customer.name}`, 'success');
-      } else {
-        this.setState({
-          selectedCustomerId: null,
-          customerName: ''
-        });
-        this.showToast("Customer not found.", 'error');
-      }
-    } else {
-      this.setState({
-        selectedCustomerId: null,
-        customerName: ''
-      });
-    }
-  };
-
-  confirmAddItem = () => {
-    const { selectedCounterparty, itemToAdd } = this.state;
-    if (selectedCounterparty && itemToAdd) {
-      this.handleAddItem(selectedCounterparty.id, itemToAdd);
-      this.setState({ showConfirmModal: false });
-      this.showToast('Item added successfully!', 'success');
-    }
-  };
-
-  cancelAddItem = () => {
-    this.setState({ showConfirmModal: false });
-  };
-
-  showToast = (message, type) => {
-    this.setState({
-      toastMessage: message,
-      showToast: true,
-      toastType: type
-    });
-  };
-
-  renderDetailsTable = (items) => (
+  const renderDetailsTable = (items) => (
     <DataGrid
       dataSource={items}
       keyField="id"
@@ -212,129 +171,145 @@ class Product extends Component {
     </DataGrid>
   );
 
-  render() {
-    const { selectedCounterparty, showModal, toastMessage, showToast, toastType, showDetailsFor, showConfirmModal, customerName } = this.state;
+  const dropDownGrid = () => (
+    <DataGrid
+      dataSource={selectedCptyType === 'priceBucket' ? priceBucketsOptions : temporaryCustomerList}
+      keyField="id"
+      columnAutoWidth={true}
+      showBorders={true}
+      selection={{ mode: 'multiple' }}
+      ref={gridRef}
+      onSelectionChanged={handleCustomerSelection}
+    >
+      <Column dataField={selectedCptyType === 'priceBucket' ? 'displayText' : 'name'} caption="Name" />
+      {selectedCptyType === 'priceBucket' && (
+        <>
+          <Column dataField="segment" caption="Segment" />
+          <Column dataField="salesDesk" caption="Sales Desk" />
+        </>
+      )}
+      {selectedCptyType === 'customer' && (
+        <>
+          <Column dataField="segment" caption="Segment" />
+          <Column dataField="salesDesk" caption="Sales Desk" />
+        </>
+      )}
+    </DataGrid>
+  );
 
-    return (
-      <div className="product-container">
-        <div className="data-grid-container">
-          <DataGrid
-            dataSource={this.state.counterparties}
-            keyField="id"
-            showBorders={true}
-            className="data-grid"
-          >
-            <Column dataField="name" caption="Counterparty Name" />
-            <Column dataField="code" caption="Code" />
-            <Column dataField="description" caption="Description" />
-            <Column
-              dataField="details"
-              caption="Details"
-              cellRender={({ data }) => (
-                <div>
-                  <button onClick={() => this.setState({ showDetailsFor: data.id })}>
-                    Show Details
-                  </button>
-                </div>
-              )}
-            />
-            <Editing mode="row" allowUpdating={true} allowDeleting={true} />
-            <Paging defaultPageSize={5} />
-          </DataGrid>
+  const selectedItemsText = () => {
+    const items = selectedCptyType === 'priceBucket'
+      ? selectedPriceBuckets
+      : selectedTempCustomers;
 
-          {/* Details section */}
-          {this.state.counterparties.map(counterparty => (
-            showDetailsFor === counterparty.id && (
-              <div className="details-container" key={counterparty.id}>
-                <button className="hide-details-button" onClick={() => this.setState({ showDetailsFor: null })}>
-                  Hide Details
+    return items.map(item => item.displayText || item.name).join(', ');
+  };
+
+  return (
+    <div className="product-container">
+      <div className="data-grid-container">
+        <DataGrid
+          dataSource={counterparties}
+          keyField="id"
+          showBorders={true}
+          className="data-grid"
+        >
+          <Column dataField="name" caption="Counterparty Name" />
+          <Column dataField="code" caption="Code" />
+          <Column dataField="description" caption="Description" />
+          <Column
+            dataField="details"
+            caption="Details"
+            cellRender={({ data }) => (
+              <div>
+                <button onClick={() => setShowDetailsFor(data.id)}>
+                  Show Details
                 </button>
-                <div className="details-table-container">
-                  {this.renderDetailsTable(counterparty.items || [])}
-                  <button className="add-item-button" onClick={() => this.openModal(counterparty)}>
-                    Add Item
-                  </button>
-                </div>
               </div>
-            )
-          ))}
-        </div>
+            )}
+          />
+          <Editing mode="row" allowUpdating={true} allowDeleting={true} />
+          <Paging defaultPageSize={5} />
+        </DataGrid>
 
-        {/* Modal for adding details */}
-        {showModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>Select Type and Add Details</h3>
-                <button className="close-modal" onClick={this.closeModal}>✖</button>
-              </div>
-              <div className="modal-body">
-                <div className="select-box-container">
-                  <SelectBox
-                    dataSource={['PriceBucket', 'Customer']}
-                    value={this.state.selectedCptyType}
-                    onValueChanged={this.handleCptyTypeChange}
-                    placeholder="Select Type"
-                  />
-                </div>
-                {this.state.selectedCptyType === 'PriceBucket' ? (
-                  <SelectBox
-                    dataSource={this.state.priceBucketsOptions}
-                    value={this.state.selectedPriceBucketId}
-                    valueExpr={'id'}
-                    displayExpr={'displayText'}
-                    onValueChanged={this.handlePriceBucketSelect}
-                    placeholder="Select Price Bucket"
-                  />
-                ) : (
-                  <div className="search-container">
-                    <span className="search-icon">🔍</span>
-                    <TextBox
-                      className="search-textbox"
-                      placeholder="Enter Customer ID"
-                      value={this.state.customerIdSearch}
-                      onValueChanged={this.handleCustomerSearch}
-                    />
-                    {customerName && (
-                      <div className="customer-name-display">
-                        <strong>Customer Name:</strong> {customerName}
-                      </div>
-                    )}
-                  </div>
-                )}
-                <button className="add-button" onClick={this.handleAddDetails}>Add</button>
+        {counterparties.map(counterparty => (
+          showDetailsFor === counterparty.id && (
+            <div className="details-container" key={counterparty.id}>
+              <button className="hide-details-button" onClick={() => setShowDetailsFor(null)}>
+                Hide Details
+              </button>
+              <div className="details-table-container">
+                {renderDetailsTable(counterparty.items || [])}
+                <button className="add-details-button" onClick={() => openModal(counterparty)}>
+                  Add Details
+                </button>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Confirm Modal for Adding Item */}
-        {showConfirmModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>Confirm</h3>
-                <button className="close-modal" onClick={this.cancelAddItem}>✖</button>
-              </div>
-              <div className="modal-body">
-                <p>Are you sure you want to add this item?</p>
-                <button className="confirm-button" onClick={this.confirmAddItem}>Yes</button>
-                <button className="cancel-button" onClick={this.cancelAddItem}>No</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <Toast
-          message={toastMessage}
-          visible={showToast}
-          onHiding={() => this.setState({ showToast: false })}
-          displayTime={3000}
-          className={`notification-toast ${toastType}`}
-        />
+          )
+        ))}
       </div>
-    );
-  }
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Add Details to {selectedCounterparty.name}</h2>
+            <SelectBox
+              dataSource={options}
+              value={selectedCptyType}
+              onValueChanged={handleCptyTypeChange}
+              displayExpr="text"
+              valueExpr="value"
+            />
+            {selectedCptyType === 'customer' && (
+              <div className="search-container">
+                <input
+                  type="text"
+                  placeholder="Search Customers..."
+                  value={searchValue}
+                  onChange={handleSearch}
+                />
+              </div>
+            )}
+            <DropDownBox
+              dataSource={selectedCptyType === 'priceBucket' ? priceBucketsOptions : temporaryCustomerList}
+              value={selectedCptyType === 'priceBucket' ? selectedPriceBuckets : selectedTempCustomers}
+              displayExpr={selectedCptyType === 'priceBucket' ? 'displayText' : 'name'}
+              valueExpr="id" // Ensure valueExpr is correctly set for selections
+              contentRender={dropDownGrid}
+            >
+              {dropDownGrid()}
+            </DropDownBox>
+            <p>Selected Items: {selectedItemsText()}</p>
+            <div className="modal-actions">
+              <button onClick={handleAddDetails}>Add</button>
+              <button onClick={closeModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmModal && (
+        <div className="confirm-modal-overlay">
+          <div className="confirm-modal-content">
+            <h2>Confirm Adding Items</h2>
+            <p>Are you sure you want to add these items?</p>
+            <p>Selected Items: {selectedItemsText()}</p>
+            <button onClick={confirmAddItem}>Confirm</button>
+            <button onClick={cancelAddItem}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      <Toast
+        message={toastMessage}
+        visible={isToastVisible}
+        type={toastType}
+        onHiding={() => setIsToastVisible(false)}
+        displayTime={3000}
+        position={{ at: 'top center', my: 'top center' }}
+      />
+    </div>
+  );
 }
 
 export default Product;
