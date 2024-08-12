@@ -52,7 +52,50 @@
   padding: 20px;
   border-radius: 8px;
   width: 400px;
+  max-width: 90%;
   text-align: center;
+  position: relative; /* Positioning context for the close button */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Added shadow for better visibility */
+}
+
+.modal-header {
+  position: relative;
+  padding-bottom: 20px; /* Space for the close button */
+}
+
+.modal-header h3 {
+  font-size: 18px; /* Smaller font size for header */
+  margin: 0; /* Remove default margin */
+}
+
+.close-modal {
+  position: absolute; /* Position absolutely within the modal */
+  top: 10px;
+  right: 10px; /* Move to the right */
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #333; /* Color for the close button */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+  color: #007bff; /* Change color on hover */
+}
+
+.modal-body {
+  margin-top: 20px;
+}
+
+.select-box-container,
+.search-container {
+  margin-bottom: 20px; /* Space between elements */
+}
+
+.select-box-container .dx-selectbox,
+.search-container .dx-textbox {
+  font-size: 14px; /* Adjust font size for input elements */
 }
 
 .modal-buttons {
@@ -66,6 +109,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px; /* Adjust font size for buttons */
 }
 
 .btn-primary {
@@ -76,4 +120,25 @@
 .btn-secondary {
   background-color: #6c757d;
   color: #fff;
+}
+
+.notification-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 4px;
+  padding: 10px;
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Added shadow for better visibility */
+}
+
+.notification-toast.success {
+  background-color: #28a745;
+}
+
+.notification-toast.error {
+  background-color: #dc3545;
 }
