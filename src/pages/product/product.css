@@ -1,103 +1,176 @@
+/* Container for the entire product page */
 .product-container {
   display: flex;
   flex-direction: column;
   height: 100%;
+  font-family: Arial, sans-serif; /* Ensure a consistent font */
 }
 
+/* Container for data grid and other elements */
 .data-grid-container {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-.grid-and-details {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.data-grid-wrapper {
-  flex: 2;
-  overflow: hidden;
-}
-
-.details-table-wrapper {
-  flex: 1;
-  padding-left: 20px;
-  overflow: hidden;
-}
-
-.details-table-container {
-  height: 100%;
-}
-
-.add-detail-button {
-  margin-bottom: 10px;
-}
-
+/* Styling for the modal overlay */
 .modal-overlay, .confirm-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Styling for the modal content box */
 .modal-content, .confirm-modal-content {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  width: 400px;
+  width: 500px;
   max-width: 90%;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.modal-actions, .confirm-modal-actions {
-  display: flex;
-  justify-content: space-around;
+/* Animation for modal content appearance */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header style inside modal */
+.modal-content h2, .confirm-modal-content h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Spacing between the top of the modal and content */
+.modal-content > *:not(.modal-actions) {
   margin-top: 20px;
 }
 
-.btn, .btn-primary, .btn-secondary {
+/* Styling for the search section */
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-top: 20px; /* Space between modal header and search input */
+}
+
+/* Label styling */
+.search-label {
+  font-size: 16px;
+  margin-right: 10px;
+  color: #333;
+}
+
+/* Search input styling */
+.search-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+/* FontAwesome icon styling */
+.search-container .fa-search {
+  color: #007bff;
+  cursor: pointer;
+}
+
+/* Styling for the dropdown */
+.dropdown-container {
+  margin-top: 20px;
+}
+
+/* Styling for the action buttons inside modal */
+.modal-actions, .confirm-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* General button style */
+.button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.btn-primary {
+/* Primary button style */
+.button-primary {
   background-color: #007bff;
   color: #fff;
 }
 
-.btn-secondary {
+/* Secondary button style */
+.button-secondary {
   background-color: #6c757d;
   color: #fff;
 }
 
-.hide-details-button, .add-details-button {
-  margin: 10px 0;
+/* Button hover states */
+.button-primary:hover {
+  background-color: #0056b3;
 }
 
+.button-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* Hiding details button specific styling */
+.hide-details-button {
+  margin: 10px 0;
+  background-color: #6c757d;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+/* Styling for the add details button */
+.add-details-button {
+  margin-top: 10px;
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+/* Styling for the notification toast */
 .notification-toast {
   position: fixed;
   bottom: 20px;
   right: 20px;
   border-radius: 4px;
-  padding: 10px;
+  padding: 10px 20px;
   color: #fff;
   font-size: 14px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  animation: slideIn 0.3s ease-in-out;
 }
 
+/* Animation for toast notification appearance */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Different styles for success and error toasts */
 .notification-toast.success {
   background-color: #28a745;
 }

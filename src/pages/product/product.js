@@ -5,6 +5,8 @@ import SelectBox from 'devextreme-react/select-box';
 import Toast from 'devextreme-react/toast';
 import 'devextreme/dist/css/dx.light.css';
 import './product.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const priceBucketsOptions = [
   { id: 1, displayText: 'Bucket 1', segment: 'Segment 1', salesDesk: 'Sales Desk 1' },
@@ -182,18 +184,8 @@ function Product() {
       onSelectionChanged={handleCustomerSelection}
     >
       <Column dataField={selectedCptyType === 'priceBucket' ? 'displayText' : 'name'} caption="Name" />
-      {selectedCptyType === 'priceBucket' && (
-        <>
-          <Column dataField="segment" caption="Segment" />
-          <Column dataField="salesDesk" caption="Sales Desk" />
-        </>
-      )}
-      {selectedCptyType === 'customer' && (
-        <>
-          <Column dataField="segment" caption="Segment" />
-          <Column dataField="salesDesk" caption="Sales Desk" />
-        </>
-      )}
+      <Column dataField="segment" caption="Segment" />
+      <Column dataField="salesDesk" caption="Sales Desk" />
     </DataGrid>
   );
 
@@ -204,6 +196,7 @@ function Product() {
 
     return items.map(item => item.displayText || item.name).join(', ');
   };
+
 
   return (
     <div className="product-container">
@@ -250,55 +243,61 @@ function Product() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Add Details to {selectedCounterparty.name}</h2>
-            <SelectBox
-              dataSource={options}
-              value={selectedCptyType}
-              onValueChanged={handleCptyTypeChange}
-              displayExpr="text"
-              valueExpr="value"
-            />
-            {selectedCptyType === 'customer' && (
-              <div className="search-container">
-                <input
-                  type="text"
-                  placeholder="Search Customers..."
-                  value={searchValue}
-                  onChange={handleSearch}
-                />
-              </div>
-            )}
-            <DropDownBox
-              dataSource={selectedCptyType === 'priceBucket' ? priceBucketsOptions : temporaryCustomerList}
-              value={selectedCptyType === 'priceBucket' ? selectedPriceBuckets : selectedTempCustomers}
-              displayExpr={selectedCptyType === 'priceBucket' ? 'displayText' : 'name'}
-              valueExpr="id" // Ensure valueExpr is correctly set for selections
-              contentRender={dropDownGrid}
-            >
-              {dropDownGrid()}
-            </DropDownBox>
-            <p>Selected Items: {selectedItemsText()}</p>
-            <div className="modal-actions">
-              <button onClick={handleAddDetails}>Add</button>
-              <button onClick={closeModal}>Cancel</button>
-            </div>
-          </div>
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>Add Details to {selectedCounterparty.name}</h2>
+      <SelectBox
+        dataSource={options}
+        value={selectedCptyType}
+        onValueChanged={handleCptyTypeChange}
+        displayExpr="text"
+        valueExpr="value"
+      />
+      {selectedCptyType === 'customer' && (
+        <div className="search-container">
+          <label className="search-label">Search Customers:</label>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search Customers..."
+            value={searchValue}
+            onChange={handleSearch}
+          />
+          <FontAwesomeIcon icon={faSearch} />
         </div>
       )}
+      <DropDownBox
+        dataSource={selectedCptyType === 'priceBucket' ? priceBucketsOptions : temporaryCustomerList}
+        value={selectedCptyType === 'priceBucket' ? selectedPriceBuckets : selectedTempCustomers}
+        displayExpr={selectedCptyType === 'priceBucket' ? 'displayText' : 'name'}
+        valueExpr="id"
+        contentRender={dropDownGrid}
+      >
+        {dropDownGrid()}
+      </DropDownBox>
+      <p>Selected Items: {selectedItemsText()}</p>
+      <div className="modal-actions">
+        <button className="button button-primary" onClick={handleAddDetails}>Add</button>
+        <button className="button button-secondary" onClick={closeModal}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
 
-      {showConfirmModal && (
-        <div className="confirm-modal-overlay">
-          <div className="confirm-modal-content">
-            <h2>Confirm Adding Items</h2>
-            <p>Are you sure you want to add these items?</p>
-            <p>Selected Items: {selectedItemsText()}</p>
-            <button onClick={confirmAddItem}>Confirm</button>
-            <button onClick={cancelAddItem}>Cancel</button>
-          </div>
-        </div>
-      )}
+{showConfirmModal && (
+  <div className="confirm-modal-overlay">
+    <div className="confirm-modal-content">
+      <h2>Confirm Adding Items</h2>
+      <p>Are you sure you want to add these items?</p>
+      <p>Selected Items: {selectedItemsText()}</p>
+      <div className="confirm-modal-actions">
+        <button className="button button-primary" onClick={confirmAddItem}>Confirm</button>
+        <button className="button button-secondary" onClick={cancelAddItem}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       <Toast
         message={toastMessage}
@@ -310,6 +309,7 @@ function Product() {
       />
     </div>
   );
+
 }
 
 export default Product;
