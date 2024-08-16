@@ -7,6 +7,8 @@ import 'devextreme/dist/css/dx.light.css';
 import './product.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import Toolbar, { Item } from 'devextreme-react/toolbar';
+import notify from 'devextreme/ui/notify';
 
 const priceBucketsOptions = [
   { id: 1, displayText: 'Bucket 1', segment: 'Segment 1', salesDesk: 'Sales Desk 1' },
@@ -19,6 +21,13 @@ const allCustomers = [
   { id: 3, name: 'Customer 3', segment: 'Segment 3', salesDesk: 'Sales Desk 3' },
   // Diğer müşteriler...
 ];
+
+const addButtonOptions = {
+  icon: 'plus',
+  onClick: () => {
+    notify('Add button has been clicked!');
+  },
+};
 
 const options = [
   { value: 'customer', text: 'Customer' },
@@ -221,6 +230,14 @@ function Product() {
               </div>
             )}
           />
+                  <Toolbar>
+                  <Item
+            location="after"
+            locateInMenu="auto"
+            widget="dxButton"
+            options={addButtonOptions}
+          />
+                  </Toolbar>
           <Editing mode="row" allowUpdating={true} allowDeleting={true} />
           <Paging defaultPageSize={5} />
         </DataGrid>

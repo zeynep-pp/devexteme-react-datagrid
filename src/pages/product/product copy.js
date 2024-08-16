@@ -9,6 +9,7 @@ import notify from 'devextreme/ui/notify';
 import { FaSun, FaMoon, FaSave, FaUserPlus, FaArrowLeft, FaSearch, FaList, FaArrowCircleRight, FaFileExcel } from 'react-icons/fa';
 import './product.css'; // CSS dosyasını import et
 
+
 class Product extends Component {
   constructor(props) {
     super(props);
